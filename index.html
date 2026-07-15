@@ -392,9 +392,15 @@
 
   <!-- INCOME -->
   <div class="card">
-    <div class="card-lab"><h2>Household income</h2></div>
+    <div class="card-lab" style="justify-content:space-between;">
+      <h2>Household income</h2>
+      <div class="unit-toggle inline" id="filingTog" role="group" aria-label="Filing status">
+        <button type="button" class="active" data-fil="mfj">Married filing jointly</button>
+        <button type="button" data-fil="single">Single</button>
+      </div>
+    </div>
     <div class="pers-row">
-      <div class="pers-name">You</div>
+      <div class="pers-name" id="youName">You</div>
       <div class="grid4">
         <div class="field"><label for="hisOld">Old salary</label><div class="input-money"><span>$</span><input type="number" id="hisOld" value="0" min="0" step="1000"></div></div>
         <div class="field"><label for="hisNew">New salary</label><div class="input-money"><span>$</span><input type="number" id="hisNew" value="0" min="0" step="1000"></div></div>
@@ -405,7 +411,7 @@
         <div class="field"><label for="hisRaise">Annual raise</label><div class="input-pct"><input type="number" id="hisRaise" value="0" min="0" max="25" step="0.5"><span>%</span></div></div>
       </div>
     </div>
-    <div class="pers-row">
+    <div class="pers-row" id="spouseRow">
       <div class="pers-name">Spouse</div>
       <div class="grid4">
         <div class="field"><label for="herOld">Old salary</label><div class="input-money"><span>$</span><input type="number" id="herOld" value="0" min="0" step="1000"></div></div>
@@ -428,11 +434,11 @@
         <div class="lbl-row"><label for="hisMatch">Your match cap</label><button type="button" class="info" data-help="hisMatch" aria-expanded="false" aria-label="How to fill in your employer match">?</button></div>
         <div class="input-pct"><input type="number" id="hisMatch" value="0" min="0" max="25" step="0.5"><span>%</span></div>
       </div>
-      <div class="field">
+      <div class="field" id="fldHerPct">
         <div class="lbl-row"><label for="herPct">Spouse contributes</label><button type="button" class="info" data-help="herPct" aria-expanded="false" aria-label="How to fill in spouse contribution percent">?</button></div>
         <div class="input-pct"><input type="number" id="herPct" value="0" min="0" max="90" step="0.5"><span>%</span></div>
       </div>
-      <div class="field">
+      <div class="field" id="fldHerMatch">
         <div class="lbl-row"><label for="herMatch">Spouse match cap</label><button type="button" class="info" data-help="herMatch" aria-expanded="false" aria-label="How to fill in spouse employer match">?</button></div>
         <div class="input-pct"><input type="number" id="herMatch" value="0" min="0" max="25" step="0.5"><span>%</span></div>
       </div>
@@ -446,7 +452,7 @@
         <div class="lbl-row"><label for="hisBal">Your balance</label><button type="button" class="info" data-help="hisBal" aria-expanded="false" aria-label="How to fill in your retirement balance">?</button></div>
         <div class="input-money"><span>$</span><input type="number" id="hisBal" value="0" min="0" step="1000"></div>
       </div>
-      <div class="field">
+      <div class="field" id="fldHerBal">
         <div class="lbl-row"><label for="herBal">Spouse balance</label><button type="button" class="info" data-help="herBal" aria-expanded="false" aria-label="How to fill in spouse retirement balance">?</button></div>
         <div class="input-money"><span>$</span><input type="number" id="herBal" value="0" min="0" step="1000"></div>
       </div>
@@ -477,7 +483,7 @@
       </div>
     </div>
     <div id="helpPanel" class="help-panel" role="region" aria-live="polite"></div>
-    <p class="hint">Tap the <b>?</b> on any field above for what it means and where to find the number. Child Tax Credit is $2,200 per qualifying child under 17 for 2026 (full credit under $400K joint income).</p>
+    <p class="hint">Tap the <b>?</b> on any field above for what it means and where to find the number. Child Tax Credit is $2,200 per qualifying child under 17 for 2026 (full credit under $400K joint / $200K single income).</p>
   </div>
 
   <!-- TAKE-HOME -->
@@ -487,7 +493,7 @@
       <div class="lrow"><span class="lab"><span>Combined gross</span><button type="button" class="info" data-help="lGross" aria-label="How combined gross is calculated">?</button></span><span class="val" id="lGross">—</span></div>
       <div class="lrow ret"><span class="lab"><span>401(k) contributions (pre-tax)</span><button type="button" class="info" data-help="l401" aria-label="How 401k is calculated">?</button></span><span class="val" id="l401">—</span></div>
       <div class="lrow minus" id="rowCaf"><span class="lab"><span>Pre-tax benefits (premiums, HSA, FSA)</span><button type="button" class="info" data-help="lCaf" aria-label="How pre-tax benefits work">?</button></span><span class="val" id="lCaf">—</span></div>
-      <div class="lrow minus"><span class="lab"><span>Federal income tax (MFJ)</span><button type="button" class="info" data-help="lFit" aria-label="How federal income tax is calculated">?</button></span><span class="val" id="lFit">—</span></div>
+      <div class="lrow minus"><span class="lab"><span id="fitLab">Federal income tax (MFJ)</span><button type="button" class="info" data-help="lFit" aria-label="How federal income tax is calculated">?</button></span><span class="val" id="lFit">—</span></div>
       <div class="lrow credit" id="rowCtc"><span class="lab"><span id="ctcLab">Child tax credit</span><button type="button" class="info" data-help="lCtc" aria-label="How the child tax credit is calculated">?</button></span><span class="val" id="lCtc">—</span></div>
       <div class="lrow minus"><span class="lab"><span>Social Security + Medicare</span><button type="button" class="info" data-help="lFica" aria-label="How Social Security and Medicare are calculated">?</button></span><span class="val" id="lFica">—</span></div>
       <div class="lrow total"><span class="lab"><span>Take-home pay</span><button type="button" class="info" data-help="lTake" aria-label="How take-home pay is calculated">?</button></span><span class="val" id="lTake">—</span></div>
@@ -527,7 +533,7 @@
     </div>
     <div class="ret-out">
       <div class="ret-row">
-        <span class="lab">Current balance <small>(you + spouse)</small></span>
+        <span class="lab">Current balance <small id="oBalWho">(you + spouse)</small></span>
         <span class="val" id="oBal">—</span>
       </div>
       <div class="ret-row">
@@ -557,13 +563,13 @@
         <thead><tr>
           <th>Year</th>
           <th colspan="2" class="grp" id="thYou">You — take-home that year</th>
-          <th colspan="2" class="grp" id="thHer">Spouse — take-home that year</th>
+          <th colspan="2" class="grp her-col" id="thHer">Spouse — take-home that year</th>
           <th class="grp-gain" id="thGain">Gained that year</th>
         </tr>
         <tr class="sub">
           <th></th>
           <th>Old</th><th>New</th>
-          <th>Old</th><th>New</th>
+          <th class="her-col">Old</th><th class="her-col">New</th>
           <th></th>
         </tr></thead>
         <tbody id="gainTbody"></tbody>
@@ -602,11 +608,11 @@
     <h3>How the numbers are calculated</h3>
     <div class="disc-grid">
       <div class="disc-group">
-        <div class="disc-lab">Tax figures (2026, MFJ)</div>
+        <div class="disc-lab">Tax figures (2026)</div>
         <ul>
-          <li>Federal brackets 10% / 12% / 22% / 24% / 32% / 35% / 37%</li>
-          <li>Standard deduction <b>$32,200</b></li>
-          <li>Child Tax Credit <b>$2,200</b>/child under 17 (phased out over $400K)</li>
+          <li>Federal brackets 10% / 12% / 22% / 24% / 32% / 35% / 37% — thresholds set by your filing status</li>
+          <li>Standard deduction <b>$32,200</b> married filing jointly · <b>$16,100</b> single</li>
+          <li>Child Tax Credit <b>$2,200</b>/child under 17 (phased out over $400K joint / $200K single)</li>
           <li>Social Security capped at <b>$184,500</b>/person</li>
           <li>Tennessee — no state income tax</li>
         </ul>
@@ -627,7 +633,7 @@
 <div class="footer-credits">
   <h3>About this tool</h3>
   <p>Built by <a href="https://www.linkedin.com/in/nicholasdavidson20" target="_blank" rel="noopener noreferrer">Nicholas Davidson</a> as a household financial planning tool — compare compensation scenarios, project savings goals, and see the long-term impact of raises and 401(k) decisions. Shared publicly in case it's useful. If you spot a bug or want to suggest an improvement, reach out on LinkedIn.</p>
-  <p><b style="color:var(--ink)">Full disclaimer:</b> This calculator is provided <b style="color:var(--ink)">"as-is"</b> for personal educational and planning purposes only. It is <b style="color:var(--ink)">not tax, financial, legal, or investment advice</b>, and no fiduciary relationship is created by using it. Calculations use published 2026 IRS figures and assume Tennessee residency (no state income tax) with W-2 wages and the standard deduction; results will not be accurate for other states, other years, self-employment income, itemizers, or Roth 401(k) contributions. Actual paycheck withholding, tax refunds, and financial outcomes may differ materially from the tool's estimates. All calculations run locally in your browser — no data is transmitted, stored, or shared. The creator makes no warranty of accuracy, fitness for a particular purpose, or continued availability, and assumes no liability for decisions made based on this tool's output. <b style="color:var(--ink)">Consult a qualified CPA or fiduciary financial advisor before making any tax, retirement, or major financial decision.</b></p>
+  <p><b style="color:var(--ink)">Full disclaimer:</b> This calculator is provided <b style="color:var(--ink)">"as-is"</b> for personal educational and planning purposes only. It is <b style="color:var(--ink)">not tax, financial, legal, or investment advice</b>, and no fiduciary relationship is created by using it. Calculations use published 2026 IRS figures for your selected filing status (single or married filing jointly) and assume Tennessee residency (no state income tax) with W-2 wages and the standard deduction; results will not be accurate for other states, other years, head-of-household filers, self-employment income, itemizers, or Roth 401(k) contributions. Actual paycheck withholding, tax refunds, and financial outcomes may differ materially from the tool's estimates. All calculations run locally in your browser — no data is transmitted, stored, or shared. The creator makes no warranty of accuracy, fitness for a particular purpose, or continued availability, and assumes no liability for decisions made based on this tool's output. <b style="color:var(--ink)">Consult a qualified CPA or fiduciary financial advisor before making any tax, retirement, or major financial decision.</b></p>
   <p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin-top:14px;">Tax figures reflect IRS Revenue Procedure 2025-32 for tax year 2026. Last verified: July 2026.</p>
 </div>
 
@@ -646,12 +652,21 @@
   document.body.style.overflow='hidden';
 })();
 (function(){
-  var STD_MFJ=32200, SS_CAP=184500, SS=0.062, MED=0.0145, ADDL_MED=0.009, ADDL_MED_MFJ=250000;
-  var CTC_PER=2200, CTC_PHASE=400000, CTC_REFUND=1700;
-  var CURRENT_SALARY=73500, MAX_GOALS=3;
-  var BR=[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]];
+  var SS_CAP=184500, SS=0.062, MED=0.0145, ADDL_MED=0.009;
+  var CTC_PER=2200, CTC_REFUND=1700;
+
+  /* 2026 figures per IRS Rev. Proc. 2025-32, by filing status */
+  var FILING={
+    mfj:{label:'married filing jointly', short:'MFJ', std:32200, ctcPhase:400000, addlMed:250000,
+      br:[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]]},
+    single:{label:'single', short:'single', std:16100, ctcPhase:200000, addlMed:200000,
+      br:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]]}
+  };
+  function fil(){ return FILING[state.filing]||FILING.mfj; }
+  var MAX_GOALS=3;
 
   var state={
+    filing:'mfj',
     hisOld:0, hisNew:0, bonus:0, herOld:0, herNew:0, herBonus:0, exp:0,
     bonusUnit:'yr', herBonusUnit:'yr',
     hisRaise:0, herRaise:0,
@@ -669,27 +684,29 @@
   var $=function(id){return document.getElementById(id);};
   var money=function(n){var s=n<0?'-':'';return s+'$'+Math.round(Math.abs(n)).toLocaleString('en-US');};
 
-  function fedTax(ti){ if(ti<=0)return 0; var t=0,prev=0; for(var i=0;i<BR.length;i++){var cap=BR[i][0],rate=BR[i][1];var slice=Math.min(ti,cap)-prev;if(slice>0)t+=slice*rate;prev=cap;if(ti<=cap)break;} return t; }
+  function fedTax(ti){ if(ti<=0)return 0; var BR=fil().br; var t=0,prev=0; for(var i=0;i<BR.length;i++){var cap=BR[i][0],rate=BR[i][1];var slice=Math.min(ti,cap)-prev;if(slice>0)t+=slice*rate;prev=cap;if(ti<=cap)break;} return t; }
   function fica(w){ w=Math.max(0,w); return SS*Math.min(w,SS_CAP)+MED*w; }
 
   function scenario(hisSalary,hisBonus,herSalary,herBonus,expenses){
+    var F=fil();
+    if(state.filing==='single'){ herSalary=0; herBonus=0; }
     var hisW=hisSalary+hisBonus, herW=herSalary+herBonus, gross=hisW+herW;
     var his401=hisW*state.hisPct/100, her401=herW*state.herPct/100, tot401=his401+her401;
     var matchAmt=hisW*Math.min(state.hisPct,state.hisMatch)/100 + herW*Math.min(state.herPct,state.herMatch)/100;
     var caf=state.prem*12 + state.hsa + state.depfsa;             // pre-tax benefits (reduce income tax AND FICA)
     // income tax
-    var taxable=Math.max(0,gross-tot401-caf-STD_MFJ);
+    var taxable=Math.max(0,gross-tot401-caf-F.std);
     var fedGross=fedTax(taxable);
     // child tax credit
     var magi=Math.max(0,gross-tot401-caf);
-    var reduction=state.kids>0?Math.ceil(Math.max(0,magi-CTC_PHASE)/1000)*50:0;
+    var reduction=state.kids>0?Math.ceil(Math.max(0,magi-F.ctcPhase)/1000)*50:0;
     var ctc=Math.max(0,state.kids*CTC_PER-reduction);
     var creditApplied=Math.min(ctc,fedGross)+Math.min(Math.max(0,ctc-fedGross),state.kids*CTC_REFUND);
     var fitNet=fedGross-creditApplied;
     // FICA (on wages minus cafeteria, allocated by wage share)
     var hisCaf=gross>0?caf*hisW/gross:0, herCaf=gross>0?caf*herW/gross:0;
     var hisFica=fica(hisW-hisCaf), herFica=fica(herW-herCaf);
-    var ff=hisFica+herFica+ADDL_MED*Math.max(0,(gross-caf)-ADDL_MED_MFJ);
+    var ff=hisFica+herFica+ADDL_MED*Math.max(0,(gross-caf)-F.addlMed);
     var take=gross-tot401-caf-fitNet-ff;
     return {gross:gross,c401:tot401,match:matchAmt,caf:caf,fedGross:fedGross,credit:creditApplied,fitNet:fitNet,fica:ff,take:take,moTake:take/12,save:take/12-expenses,retire:tot401+matchAmt,
       hisW:hisW,herW:herW,his401:his401,her401:her401,hisCaf:hisCaf,herCaf:herCaf,hisFica:hisFica,herFica:herFica};
@@ -925,7 +942,7 @@
       var sSign = saveGain>=0?'+':'\u2212';
       $('oSaveGain').textContent=sSign+money(Math.abs(saveGain))+'/mo';
     }
-    var totBal=state.hisBal+state.herBal;
+    var totBal=state.hisBal+(state.filing==='single'?0:state.herBal);
     $('oBal').textContent=money(totBal);
     $('oRet').innerHTML=money(now.retire/12)+' <small>'+money(now.c401/12)+' yours + '+money(now.match/12)+' match</small>';
     // expense max hint + itemized total (moTake must be computed first)
@@ -951,7 +968,7 @@
     var hg=1+state.hisRaise/100, rg=1+state.herRaise/100;
     var series=[]; // one entry per year
     var cum={oldHis:0,oldHer:0,newHis:0,newHer:0,oldTake:0,newTake:0};
-    var g=1+state.retGrow/100, startBal=state.hisBal+state.herBal;
+    var g=1+state.retGrow/100, startBal=state.hisBal+(state.filing==='single'?0:state.herBal);
     var oldBal=startBal, newBal=startBal; // parallel investment balances
     for(var y=1;y<=10;y++){
       var f1=Math.pow(hg,y-1), f2=Math.pow(rg,y-1);
@@ -1058,7 +1075,10 @@
       var balNote = startBal>0
         ? ' Retirement includes your starting balance of <b>'+money(startBal)+'</b> growing at '+state.retGrow+'% per year on top of new contributions.'
         : ' Retirement chart shows new contributions plus match, growing at '+state.retGrow+'% per year.';
-      var summary='<p class="chart-sum">'+modeNote+' Over the full 10 years — with '+state.hisRaise+'% annual raises for you and '+state.herRaise+'% for your spouse — the new scenario puts <b>'+money(last.thGain)+'</b> more in your pocket, plus <b>'+money(last.retGain)+'</b> more in retirement value: <b>'+money(last.thGain+last.retGain)+' total</b>.'+balNote+' Hover any point for that year\u2019s numbers.</p>';
+      var raiseTxt = state.filing==='single'
+        ? 'with '+state.hisRaise+'% annual raises'
+        : 'with '+state.hisRaise+'% annual raises for you and '+state.herRaise+'% for your spouse';
+      var summary='<p class="chart-sum">'+modeNote+' Over the full 10 years — '+raiseTxt+' — the new scenario puts <b>'+money(last.thGain)+'</b> more in your pocket, plus <b>'+money(last.retGain)+'</b> more in retirement value: <b>'+money(last.thGain+last.retGain)+' total</b>.'+balNote+' Hover any point for that year\u2019s numbers.</p>';
 
       chart.innerHTML='<div class="mini-chart">'+chartA.html+'</div>'+'<div class="mini-chart">'+chartB.html+'</div>'+summary;
 
@@ -1095,9 +1115,11 @@
 
     // headers + explainer flip based on toggle
     var isCum=state.tableView==='cum';
-    $('thYou').textContent = isCum?'You — running total':'You — take-home that year';
+    var single=state.filing==='single';
+    $('thYou').textContent = isCum?(single?'Take-home — running total':'You — running total'):(single?'Take-home that year':'You — take-home that year');
     $('thHer').textContent = isCum?'Spouse — running total':'Spouse — take-home that year';
     $('thGain').textContent = isCum?'Gained (running total)':'Gained that year';
+    document.querySelectorAll('.her-col').forEach(function(el){ el.style.display=single?'none':''; });
     $('tblExplainer').innerHTML = isCum
       ? '<b>Running total.</b> Each row shows every dollar earned from Year 1 through that year, added up. So Year 10 shows all take-home over the whole decade.'
       : '<b>That year only.</b> Each row shows what you take home in that single year. Numbers grow because raises compound each year.';
@@ -1114,8 +1136,7 @@
       rows+='<tr'+lastRow+'><td>Year '+y+'</td>'+
         '<td>'+money(oldHis)+'</td>'+
         '<td class="new">'+money(newHis)+'</td>'+
-        '<td>'+money(oldHer)+'</td>'+
-        '<td class="new">'+money(newHer)+'</td>'+
+        (single?'':('<td>'+money(oldHer)+'</td>'+'<td class="new">'+money(newHer)+'</td>'))+
         '<td class="gain-cell">'+money(gain)+'</td></tr>';
     });
     $('gainTbody').innerHTML=rows;
@@ -1139,6 +1160,23 @@
   $('modeTabs').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b||b.disabled)return; state.mode=b.dataset.mode; if(state.mode==='split'){ state.goals.forEach(function(g){g.alloc=null;}); } if(state.mode==='focus'){ state.goals.forEach(function(g){g.focusAlloc=null;}); } this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); render(); });
 
   $('tblViewTabs').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b)return; state.tableView=b.dataset.tv; this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); renderGain(); });
+
+  // filing status toggle
+  function applyFiling(){
+    var single=state.filing==='single';
+    $('spouseRow').style.display=single?'none':'grid';
+    $('fldHerPct').style.display=single?'none':'flex';
+    $('fldHerMatch').style.display=single?'none':'flex';
+    $('fldHerBal').style.display=single?'none':'flex';
+    $('fitLab').textContent='Federal income tax ('+(single?'single':'MFJ')+')';
+    $('oBalWho').textContent=single?'':'(you + spouse)';
+  }
+  $('filingTog').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    state.filing=b.dataset.fil;
+    this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);});
+    applyFiling(); render();
+  });
 
   document.querySelectorAll('.unit-toggle[data-target]').forEach(function(tg){
     tg.addEventListener('click',function(e){
@@ -1204,8 +1242,8 @@
     lGross:{p:'take',t:'Combined gross income',h:'<p><b>Formula:</b> your salary + your bonus + spouse salary + spouse bonus.</p><p>This is your total household income <b>before any deductions</b>. It is the number every paycheck deduction and tax below is calculated from. Bonuses shown as monthly are multiplied by 12 to get an annual figure.</p><p>If either of you also has self-employment or 1099 income, that would need to be modeled separately — this tool assumes W-2 wages only.</p>'},
     l401:{p:'take',t:'401(k) contributions (pre-tax)',h:'<p><b>Formula:</b> (your salary + bonus) &times; your % + (spouse salary + bonus) &times; spouse %.</p><p>Money going into your workplace retirement accounts before taxes are calculated. It reduces your <b>federal taxable income</b> (so it lowers the tax bill below), but it does <b>not</b> reduce Social Security and Medicare — those are always paid on your full wages.</p><p>You keep this money — it just moves into your 401(k) instead of your checking account. That is why it comes out of gross before "take-home" is calculated.</p><p><b>2026 limits:</b> $24,500 per person under 50 (not enforced here — keep your % below what would exceed it).</p>'},
     lCaf:{p:'take',t:'Pre-tax benefits (premiums, HSA, FSA)',h:'<p><b>Formula:</b> (monthly health premiums &times; 12) + annual HSA contribution + annual dependent-care FSA election.</p><p>These are elections you make during benefits enrollment. They come out of your paycheck before taxes and are called <b>cafeteria plan</b> or <b>Section 125</b> benefits.</p><p>They lower <b>both</b> federal income tax <b>and</b> Social Security/Medicare — which makes them one of the most tax-efficient dollars you can spend, since 401(k) only lowers federal income tax.</p><p>Only shown if any pre-tax benefits are entered above.</p>'},
-    lFit:{p:'take',t:'Federal income tax (MFJ)',h:'<p><b>Formula:</b></p><p>1. Taxable income = combined gross &minus; 401(k) contributions &minus; pre-tax benefits &minus; $32,200 standard deduction<br>2. Apply the <b>2026 MFJ tax brackets</b> to that taxable income:</p><p>&bull; 10% on income up to $24,800<br>&bull; 12% up to $100,800<br>&bull; 22% up to $211,400<br>&bull; 24% up to $403,550<br>&bull; 32% up to $512,450<br>&bull; 35% up to $768,700<br>&bull; 37% above that</p><p>The tax is <b>progressive</b> — each bracket only applies to income within that range. So earning into the 22% bracket does not mean all your income is taxed at 22%.</p><p>The child tax credit shown below this line is then subtracted from this amount.</p>'},
-    lCtc:{p:'take',t:'Child tax credit',h:'<p><b>Formula:</b> $2,200 per qualifying child under 17, subtracted straight from the federal income tax bill above.</p><p>This is a <b>credit</b>, not a deduction — every $1 comes off your tax dollar-for-dollar. It phases out $50 per $1,000 of income above $400,000 (MFJ), so at your household income you get the full amount.</p><p>Up to $1,700 per child is refundable — meaning if the credit is bigger than your tax owed, you still get up to $1,700/child back as a refund.</p><p>Only shown if you have kids entered above.</p>'},
+    lFit:{p:'take',t:'Federal income tax',h:'<p><b>Formula:</b></p><p>1. Taxable income = combined gross &minus; 401(k) contributions &minus; pre-tax benefits &minus; the standard deduction (<b>$32,200</b> married filing jointly, <b>$16,100</b> single)<br>2. Apply the <b>2026 tax brackets</b> for your filing status:</p><p><b>Married filing jointly:</b> 10% to $24,800 &bull; 12% to $100,800 &bull; 22% to $211,400 &bull; 24% to $403,550 &bull; 32% to $512,450 &bull; 35% to $768,700 &bull; 37% above</p><p><b>Single:</b> 10% to $12,400 &bull; 12% to $50,400 &bull; 22% to $105,700 &bull; 24% to $201,775 &bull; 32% to $256,225 &bull; 35% to $640,600 &bull; 37% above</p><p>The tax is <b>progressive</b> — each bracket only applies to income within that range. So earning into the 22% bracket does not mean all your income is taxed at 22%.</p><p>The child tax credit shown below this line is then subtracted from this amount.</p>'},
+    lCtc:{p:'take',t:'Child tax credit',h:'<p><b>Formula:</b> $2,200 per qualifying child under 17, subtracted straight from the federal income tax bill above.</p><p>This is a <b>credit</b>, not a deduction — every $1 comes off your tax dollar-for-dollar. It phases out $50 per $1,000 of income above <b>$400,000</b> married filing jointly or <b>$200,000</b> single.</p><p>Up to $1,700 per child is refundable — meaning if the credit is bigger than your tax owed, you still get up to $1,700/child back as a refund.</p><p>Only shown if you have kids entered above.</p>'},
     lFica:{p:'take',t:'Social Security + Medicare (FICA)',h:'<p><b>Formula:</b></p><p>&bull; Social Security: <b>6.2% of wages</b>, capped at $184,500 per person for 2026<br>&bull; Medicare: <b>1.45% of wages</b>, no cap<br>&bull; Additional Medicare: extra <b>0.9%</b> on household wages above $250,000</p><p>These are payroll taxes — they fund Social Security and Medicare benefits and are paid on your <b>full wages</b>. Only pre-tax benefits (premiums, HSA, dependent-care FSA) reduce the amount subject to FICA. 401(k) contributions do <b>not</b> reduce FICA.</p><p>Your employer matches this same amount but that is invisible to you; only your half shows here.</p>'},
     lTake:{p:'take',t:'Take-home pay',h:'<p><b>Formula:</b> combined gross &minus; 401(k) &minus; pre-tax benefits &minus; federal income tax (after child credit) &minus; FICA.</p><p>This is the money that actually lands in your bank account each year, plus a monthly average shown next to it (annual &divide; 12).</p><p><b>What this does NOT include:</b></p><p>&bull; State income tax — this tool assumes a no-income-tax state like Tennessee, Texas, or Florida; if you live elsewhere, subtract your state tax separately<br>&bull; Local or city income taxes, if applicable in your area<br>&bull; Post-tax deductions like union dues, garnishments, or after-tax insurance<br>&bull; Roth 401(k) contributions (the tool assumes traditional pre-tax)</p><p>This is a strong estimate for planning, but your actual paychecks may vary slightly due to how withholding is calculated versus actual tax owed — that gap shows up as your annual refund or tax due.</p>'}
   };
@@ -1231,7 +1269,7 @@
   });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&activeHelp)closeHelp(); });
 
-  renderEditor(); render();
+  renderEditor(); applyFiling(); render();
 })();
 </script>
 </body>
