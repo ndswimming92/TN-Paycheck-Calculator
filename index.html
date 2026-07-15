@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savings Runway — Household Income &amp; Goals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;450;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132229; --ink-soft:#43606b; --paper:#f2f5f2; --surface:#ffffff;
+    --line:#dde4e0; --line-strong:#c7d1cc;
+    --accent:#0d7a5f; --accent-deep:#0a5c48; --accent-wash:#e4f1eb;
+    --amber:#b06a12; --amber-wash:#f6ecda;
+    --violet:#5b4a9e; --violet-wash:#ece8f7;
+    --radius:14px; --shadow:0 1px 2px rgba(19,34,41,.05), 0 10px 28px -18px rgba(19,34,41,.3);
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Inter",system-ui,-apple-system,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;padding:clamp(16px,4vw,40px);}
+  .wrap{max-width:840px;margin:0 auto;}
+
+  .head{background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:clamp(24px,4vw,36px);position:relative;overflow:hidden;}
+  .head::after{content:"";position:absolute;top:0;right:0;width:200px;height:100%;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 14px);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000);mask-image:linear-gradient(90deg,transparent,#000);pointer-events:none;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#6fd3b3;margin:0 0 14px;}
+  .hero-num{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+  .hero-num .big{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(38px,8.5vw,58px);line-height:.95;letter-spacing:-.03em;}
+  .hero-num .unit{color:#b9cbc4;font-size:15px;padding-bottom:8px;}
+  .hero-sub{margin-top:14px;font-size:15px;color:#cfe0da;}
+  .hero-sub b{color:#8fe0c3;font-weight:600;font-family:"Space Grotesk",sans-serif;}
+  .hero-sub .ret{display:block;margin-top:6px;color:#c9c2e8;}
+  .hero-sub .ret b{color:#b9aef0;}
+  .mult{display:inline-block;margin-left:8px;background:rgba(111,211,179,.14);border:1px solid rgba(111,211,179,.3);color:#8fe0c3;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;padding:3px 9px;border-radius:999px;vertical-align:middle;}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(18px,3.5vw,26px);margin-top:18px;}
+  .card-lab{display:flex;align-items:center;gap:10px;margin:0 0 18px;}
+  .card-lab h2{font-family:"Space Grotesk",sans-serif;font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em;}
+  .card-lab::before{content:"";width:18px;height:2px;background:var(--accent);border-radius:2px;}
+  .hint{font-size:12.5px;color:var(--ink-soft);margin:12px 0 0;font-style:italic;}
+
+  .field{display:flex;flex-direction:column;gap:7px;}
+  .field>label{min-height:32px;line-height:1.35;display:flex;align-items:center;gap:8px;}
+  .field label{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .input-money,.input-pct{position:relative;display:flex;align-items:center;}
+  .input-money>span{position:absolute;left:14px;color:var(--ink-soft);font-weight:500;pointer-events:none;}
+  .input-pct>span{position:absolute;right:14px;color:var(--ink-soft);font-weight:500;pointer-events:none;}
+  input[type=number],input[type=text]{width:100%;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:18px;color:var(--ink);
+    background:var(--paper);border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;}
+  .input-money input[type=number]{padding-left:28px;}
+  .input-pct input[type=number]{padding-right:32px;}
+  input:focus{outline:2.5px solid var(--accent);outline-offset:1px;border-color:var(--accent);background:#fff;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;}
+  @media (max-width:640px){.grid3{grid-template-columns:1fr;}.grid4{grid-template-columns:1fr 1fr;}}
+
+  .subhead{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);
+    margin:22px 0 12px;display:flex;align-items:center;gap:10px;}
+  .subhead::after{content:"";flex:1;height:1px;background:var(--line);}
+  .pers-row{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;margin-bottom:14px;}
+  .pers-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;padding-top:26px;color:var(--ink);}
+  @media (max-width:560px){.pers-row{grid-template-columns:1fr;gap:8px;}.pers-name{padding-top:4px;font-size:13px;color:var(--accent-deep);}}
+  .subhead.grn{color:var(--accent-deep);}
+  .exp-max{font-family:"Inter",sans-serif;font-size:11.5px;font-weight:500;color:var(--accent-deep);text-transform:none;letter-spacing:0;margin-left:auto;}
+  .exp-max.over{color:#a13d1a;}
+  .unit-toggle#expModeTog button{padding:5px 10px;font-family:"Inter",sans-serif;font-size:11.5px;letter-spacing:.02em;}
+  .exp-item{display:grid;grid-template-columns:1fr 150px 34px;gap:8px;margin-bottom:8px;align-items:center;}
+  @media (max-width:520px){.exp-item{grid-template-columns:1fr 130px 34px;}}
+  .exp-item input[type=text]{font-size:15px;padding:10px 12px;font-weight:500;}
+  .exp-item .input-money{position:relative;}
+  .exp-item .input-money>span{position:absolute;left:12px;color:var(--ink-soft);font-weight:500;pointer-events:none;}
+  .exp-item .input-money input{font-size:15px;padding:10px 12px 10px 26px;font-weight:600;}
+  .exp-item .icon-btn{width:34px;height:38px;}
+  .exp-items-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap;}
+  .add-exp{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13.5px;color:var(--accent-deep);
+    background:var(--accent-wash);border:1.5px dashed var(--accent);border-radius:10px;padding:10px 16px;cursor:pointer;transition:all .15s;}
+  .add-exp:hover{background:#d5eae0;}
+  .add-exp:disabled{opacity:.4;cursor:default;}
+  .add-exp:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+  .exp-total{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .exp-total .lab{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .exp-total .val{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:20px;color:var(--ink);}
+  .exp-total .val.over{color:#a13d1a;}
+  .unit-toggle.inline{margin-left:auto;}
+  .unit-toggle{display:inline-flex;background:var(--paper);border:1px solid var(--line-strong);border-radius:6px;padding:2px;gap:1px;flex:0 0 auto;}
+  .unit-toggle button{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;color:var(--ink-soft);
+    background:none;border:none;padding:3px 7px;border-radius:4px;cursor:pointer;transition:all .12s;line-height:1;}
+  .unit-toggle button:hover{color:var(--ink);}
+  .unit-toggle button.active{background:var(--ink);color:#fff;}
+  .unit-toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .lbl-row{display:flex;align-items:flex-start;gap:6px;min-height:32px;}
+  .lbl-row label{line-height:1.35;flex:1;}
+  .lbl-row .info{margin-top:1px;}
+  .info{flex:0 0 auto;width:17px;height:17px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);
+    color:var(--ink-soft);font-size:10.5px;font-weight:700;line-height:1;cursor:pointer;padding:0;display:inline-flex;
+    align-items:center;justify-content:center;transition:all .15s;}
+  .info:hover{border-color:var(--accent);color:var(--accent);}
+  .info.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .info:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .help-panel{display:none;margin-top:14px;background:var(--accent-wash);border:1px solid #bfe0d2;border-radius:12px;
+    padding:16px 18px;font-size:13.5px;color:var(--ink);line-height:1.55;}
+  .help-panel.violet{background:var(--violet-wash);border-color:#d4cbee;}
+  .help-panel.violet h4{color:var(--violet);}
+  .help-panel.violet .where{color:var(--violet);}
+  .help-panel.show{display:block;}
+  .help-panel h4{font-family:"Space Grotesk",sans-serif;font-size:14px;margin:0 0 9px;color:var(--accent-deep);}
+  .help-panel p{margin:0 0 9px;}
+  .help-panel p:last-child{margin-bottom:0;}
+  .help-panel .where{font-weight:600;color:var(--accent-deep);margin-top:2px;}
+  .help-panel b{font-weight:600;}
+
+  .chips{display:flex;gap:8px;margin-top:9px;}
+  .chips button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:var(--ink-soft);background:var(--paper);
+    border:1px solid var(--line-strong);border-radius:8px;padding:7px 12px;cursor:pointer;transition:all .15s;}
+  .chips button:hover{border-color:var(--ink-soft);}
+  .chips button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .chips button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+
+  .ledger{margin-top:4px;}
+  .lrow{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;gap:12px;}
+  .lrow .lab{color:var(--ink-soft);display:inline-flex;align-items:center;gap:8px;}
+  .lrow .lab .info{width:16px;height:16px;font-size:10px;}
+  .lrow .val{font-family:"Space Grotesk",sans-serif;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;}
+  .lrow.minus .val{color:var(--amber);}
+  .lrow.ret .val{color:var(--violet);}
+  .lrow.credit .val{color:var(--accent-deep);}
+  .lrow.total{border-bottom:none;border-top:2px solid var(--ink);margin-top:4px;padding-top:14px;}
+  .lrow.total .lab{color:var(--ink);font-weight:500;}
+  .lrow.total .val{font-size:22px;color:var(--accent-deep);}
+  .lrow-cmp{padding:4px 0 8px;}
+  .cmp-line{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px;color:var(--ink-soft);gap:12px;}
+  .cmp-line .cmp-lab{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;}
+  .cmp-line .cmp-val{font-family:"Space Grotesk",sans-serif;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;}
+  .cmp-line.cmp-gain .cmp-val{color:var(--accent-deep);background:var(--accent-wash);padding:2px 10px;border-radius:6px;font-size:13.5px;}
+  .cmp-line.cmp-gain.neg .cmp-val{color:var(--amber);background:var(--amber-wash);}
+  .cmp-line.cmp-gain.zero .cmp-val{color:var(--ink-soft);background:var(--paper);}
+  .save-main{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;width:100%;}
+  .save-cmp{width:100%;margin-top:12px;padding-top:12px;border-top:1px dashed #bfe0d2;}
+  .save-cmp .cmp-lab{color:var(--accent-deep);}
+  .lrow .val small{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:12px;color:var(--ink-soft);margin-left:8px;}
+  .exp-field{margin-top:18px;}
+  .savings-out{margin-top:18px;background:var(--accent-wash);border:1px solid #bfe0d2;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:0;}
+  .savings-out .lab{font-size:13px;color:var(--accent-deep);font-weight:500;}
+  .savings-out .val{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:28px;color:var(--accent-deep);letter-spacing:-.02em;}
+  .ret-out{margin-top:12px;background:var(--violet-wash);border:1px solid #d4cbee;border-radius:12px;padding:14px 18px;}
+  .ret-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:4px 0;}
+  .ret-row + .ret-row{border-top:1px dashed #cbc0ea;margin-top:6px;padding-top:10px;}
+  .ret-row .lab{font-size:13px;color:var(--violet);font-weight:500;}
+  .ret-row .lab small{color:#7d6fb5;font-weight:400;font-family:"IBM Plex Mono",monospace;font-size:11px;margin-left:4px;}
+  .ret-row .val{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:22px;color:var(--violet);letter-spacing:-.02em;}
+  .ret-row .val small{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:11.5px;color:#7d6fb5;margin-left:8px;}
+  .warn{color:#a13d1a;font-size:13px;margin-top:8px;font-weight:500;}
+
+  .goal-edit{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--surface);}
+  .ge-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+  .ge-idx{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:#fff;background:var(--accent);
+    width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;}
+  .ge-top .spacer{flex:1;}
+  .icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink-soft);
+    cursor:pointer;font-size:14px;line-height:1;display:grid;place-items:center;transition:all .15s;}
+  .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .icon-btn:disabled{opacity:.3;cursor:default;}
+  .icon-btn.del:hover{border-color:#c0442a;color:#c0442a;background:#fdf1ee;}
+  .icon-btn:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+  .ge-fields{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;}
+  @media (max-width:520px){.ge-fields{grid-template-columns:1fr;}}
+  .ge-fields input{font-size:16px;}
+  .add-goal{width:100%;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14.5px;color:var(--accent-deep);
+    background:var(--accent-wash);border:1.5px dashed var(--accent);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;}
+  .add-goal:hover{background:#d5eae0;}
+  .add-goal:disabled{opacity:.4;cursor:default;}
+  .add-goal:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+
+  .tabs{display:flex;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:4px;}
+  .tabs button{flex:1;font-size:13.5px;font-weight:500;color:var(--ink-soft);background:none;border:none;padding:10px 8px;border-radius:8px;cursor:pointer;transition:all .15s;}
+  .tabs button.active{background:#fff;color:var(--ink);box-shadow:var(--shadow);font-weight:600;}
+  .tabs button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+  .tabs button:disabled{opacity:.35;cursor:default;}
+
+  .goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:16px;}
+  .goal{border:1px solid var(--line);border-radius:12px;padding:16px;position:relative;overflow:hidden;background:var(--surface);}
+  .goal::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);}
+  .goal .g-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;}
+  .goal .g-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14.5px;overflow-wrap:anywhere;}
+  .goal .g-target{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap;}
+  .goal .g-date{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:24px;letter-spacing:-.02em;color:var(--accent-deep);line-height:1.1;}
+  .goal .g-when{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .goal .g-delta{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line-strong);font-size:12.5px;color:var(--ink-soft);}
+  .goal .g-delta .g-comp{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+  .goal .g-delta .g-lab{color:var(--ink-soft);}
+  .goal .g-delta .g-sooner{display:inline-block;background:var(--accent-wash);color:var(--accent-deep);
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px;margin-left:4px;}
+  .goal .g-delta .g-later{display:inline-block;background:var(--amber-wash);color:var(--amber);
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px;margin-left:4px;}
+  .goal .g-delta b{color:var(--amber);font-weight:600;}
+  .goal .alloc{margin-top:12px;}
+  .goal .alloc label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:8px;}
+  .goal .alloc .alloc-max{color:var(--accent-deep);text-transform:none;letter-spacing:0;font-family:"Inter",sans-serif;font-size:11px;font-weight:500;}
+  .goal .alloc .input-money>span{left:12px;font-size:14px;}
+  .goal .alloc input{font-size:15px;padding:9px 12px 9px 26px;}
+  .alloc-bar{margin-top:14px;font-size:13px;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+  .alloc-bar b{font-family:"Space Grotesk",sans-serif;}
+  .alloc-bar .over{color:#a13d1a;font-weight:600;}
+  .alloc-bar .under{color:var(--accent-deep);font-weight:600;}
+
+  .foot{background:var(--amber-wash);border:1px solid #e8d4ad;border-radius:var(--radius);padding:20px 22px;margin-top:20px;}
+  .foot h3{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;margin:0 0 10px;color:var(--amber);}
+  .foot p{margin:0 0 9px;font-size:13.5px;color:#5c4a2a;}
+  .foot p:last-child{margin-bottom:0;}
+  .foot b{font-weight:600;}
+  .disc-card{max-width:840px;margin:24px auto 0;padding:22px clamp(18px,3vw,26px);background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft);line-height:1.55;}
+  .disc-card h3{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;color:var(--ink);
+    margin:0 0 16px;letter-spacing:-.005em;}
+  .disc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;}
+  @media (max-width:640px){.disc-grid{grid-template-columns:1fr;gap:18px;}}
+  .disc-group{min-width:0;}
+  .disc-lab{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent-deep);margin-bottom:8px;font-weight:500;}
+  .disc-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;}
+  .disc-card li{position:relative;padding-left:14px;font-size:13px;color:var(--ink-soft);}
+  .disc-card li::before{content:"";position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.6;}
+  .disc-card li b{color:var(--ink);font-weight:600;}
+  .disc-foot{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);
+    font-style:italic;text-align:center;}
+
+  .mini-chart{margin-bottom:22px;}
+  .mini-chart:last-of-type{margin-bottom:14px;}
+  .mini-chart-title{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);margin:0 0 10px;letter-spacing:-.005em;}
+  .chart-legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;font-size:12.5px;color:var(--ink-soft);}
+  .chart-legend span{display:inline-flex;align-items:center;gap:7px;}
+  .chart-legend i{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .chart-wrap{position:relative;}
+  .chart-wrap svg{display:block;width:100%;height:auto;overflow:visible;}
+  .chart-wrap svg .dot{transition:r .12s ease, stroke-width .12s ease;cursor:pointer;}
+  .chart-wrap svg .dot.on{stroke-width:3;}
+  .chart-wrap svg .dot.take{fill:#fff;stroke:var(--accent);stroke-width:2.4;}
+  .chart-wrap svg .dot.take.on{r:7;}
+  .chart-wrap svg .dot.ret{fill:#fff;stroke:var(--violet);stroke-width:2.4;}
+  .chart-wrap svg .dot.ret.on{r:7;}
+  .chart-wrap svg .hit{fill:transparent;cursor:pointer;}
+  .chart-wrap svg .vline{stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 3;opacity:0;transition:opacity .12s;}
+  .chart-wrap svg .vline.on{opacity:1;}
+  .tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);border-radius:10px;
+    padding:11px 14px;font-size:12.5px;line-height:1.5;box-shadow:0 8px 24px -12px rgba(19,34,41,.5);
+    min-width:180px;opacity:0;transform:translate(-50%,calc(-100% - 10px));transition:opacity .12s;z-index:10;}
+  .tooltip.on{opacity:1;}
+  .tooltip::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--ink);
+    transform:translateX(-50%) rotate(45deg);border-radius:2px;}
+  .tooltip .tt-year{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8fe0c3;margin-bottom:6px;}
+  .tooltip .tt-row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;}
+  .tooltip .tt-row + .tt-row{margin-top:3px;}
+  .tooltip .tt-row .k{color:#b9cbc4;font-size:12px;display:inline-flex;align-items:center;gap:6px;}
+  .tooltip .tt-row .k i{width:8px;height:8px;border-radius:2px;display:inline-block;}
+  .tooltip .tt-row .v{font-family:"Space Grotesk",sans-serif;font-weight:600;font-variant-numeric:tabular-nums;}
+  .tooltip .tt-total{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.15);}
+  .tooltip .tt-total .v{color:#8fe0c3;}
+  .chart-sum{margin:14px 0 0;font-size:13.5px;color:var(--ink);line-height:1.5;}
+  .chart-sum b{font-family:"Space Grotesk",sans-serif;color:var(--accent-deep);}
+  .tbl-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 10px;}
+  .tbl-title{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);letter-spacing:-.005em;}
+  .tabs.tbl-tabs{max-width:280px;}
+  .tabs.tbl-tabs button{font-size:12.5px;padding:8px 12px;}
+  .tbl-explainer{background:#f7faf8;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;
+    padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .tbl-explainer b{color:var(--ink);font-weight:600;}
+  .table-scroll{overflow-x:auto;margin-top:6px;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;}
+  table.gain{border-collapse:collapse;width:100%;min-width:620px;font-size:13.5px;}
+  table.gain th,table.gain td{padding:11px 14px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  table.gain thead th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;background:var(--paper);border-bottom:1px solid var(--line);}
+  table.gain thead th.grp{text-align:center;color:var(--ink);border-bottom:none;padding-bottom:6px;}
+  table.gain thead th.grp-gain{text-align:center;color:var(--accent-deep);border-bottom:none;padding-bottom:6px;background:var(--accent-wash);}
+  table.gain thead tr.sub th{padding-top:0;font-weight:500;background:var(--paper);}
+  table.gain thead tr.sub th:nth-child(3),
+  table.gain thead tr.sub th:nth-child(5){background:#eef4f0;}
+  table.gain thead tr.sub th:last-child{background:var(--accent-wash);}
+  table.gain tbody td{font-family:"Space Grotesk",sans-serif;font-weight:600;color:var(--ink);border-top:1px solid var(--line);}
+  table.gain tbody td.new{background:#f7faf8;}
+  table.gain tbody td.gain-cell{color:var(--accent-deep);background:var(--accent-wash);font-size:14.5px;}
+  table.gain tbody td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:12.5px;letter-spacing:.03em;}
+  table.gain thead th:first-child{text-align:left;position:sticky;left:0;background:var(--paper);z-index:2;}
+  table.gain tbody tr.row-last td{font-weight:700;font-size:15px;border-top:2px solid var(--ink);}
+  table.gain tbody tr.row-last td:first-child{color:var(--ink);font-weight:600;font-size:13px;}
+  table.gain tbody tr.row-last td.gain-cell{font-size:16px;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(19,34,41,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    display:flex;align-items:flex-start;justify-content:center;z-index:1000;padding:24px 16px;overflow-y:auto;}
+  .modal-overlay.hidden{display:none;}
+  .modal{background:var(--surface);border-radius:16px;max-width:640px;width:100%;padding:clamp(24px,4vw,36px);
+    box-shadow:0 20px 60px -20px rgba(19,34,41,.5);animation:modalIn .25s ease-out;margin:auto;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  .modal h2{font-family:"Space Grotesk",sans-serif;font-size:24px;font-weight:700;margin:0 0 10px;letter-spacing:-.02em;color:var(--ink);}
+  .modal-lead{font-size:14.5px;color:var(--ink-soft);margin:0 0 22px;line-height:1.5;}
+  .modal-body{display:flex;flex-direction:column;gap:16px;margin-bottom:22px;}
+  .d-item{display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start;}
+  .d-icon{font-size:22px;line-height:1;padding-top:2px;}
+  .d-item h3{font-family:"Space Grotesk",sans-serif;font-size:14.5px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+  .d-item p{font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin:0;}
+  .d-item p b{color:var(--ink);font-weight:600;}
+  .modal-foot{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:14px;}
+  .d-check{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--ink);user-select:none;line-height:1.4;}
+  .d-check input{width:18px;height:18px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer;}
+  #acceptBtn{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;color:#fff;background:var(--accent);
+    border:none;border-radius:10px;padding:13px 20px;cursor:pointer;transition:all .15s;width:100%;}
+  #acceptBtn:hover:not(:disabled){background:var(--accent-deep);}
+  #acceptBtn:disabled{background:var(--line-strong);color:#fff;cursor:not-allowed;}
+  #acceptBtn:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;}
+
+  /* footer credits + inline disclaimer bar */
+  .footer-credits{max-width:840px;margin:32px auto 0;padding:24px clamp(16px,4vw,28px);
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13px;color:var(--ink-soft);line-height:1.6;}
+  .footer-credits h3{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin:0 0 10px;}
+  .footer-credits p{margin:0 0 10px;}
+  .footer-credits p:last-child{margin-bottom:0;}
+  .footer-credits a{color:var(--accent-deep);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
+  .footer-credits a:hover{color:var(--accent);}
+  .disclaimer-strip{background:var(--amber-wash);border:1px solid #e8d4ad;border-radius:10px;padding:10px 16px;font-size:12.5px;color:#5c4a2a;text-align:center;margin-bottom:14px;line-height:1.5;}
+  .disclaimer-strip b{color:var(--amber);font-weight:600;}
+  @media (prefers-reduced-motion:reduce){.modal{animation:none !important;}*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div id="disclaimerModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h2 id="modalTitle">Before you use this tool</h2>
+    <p class="modal-lead">This is a personal financial planning calculator. Please read and accept the terms below to continue.</p>
+    <div class="modal-body">
+      <div class="d-item">
+        <div class="d-icon" aria-hidden="true">⚖️</div>
+        <div>
+          <h3>Not tax, financial, or legal advice</h3>
+          <p>This tool is for <b>educational and personal planning purposes only</b>. It is not a substitute for professional advice from a CPA, tax preparer, financial planner, or attorney. Do not use its output for filing taxes, making major financial decisions, or presenting to lenders.</p>
+        </div>
+      </div>
+      <div class="d-item">
+        <div class="d-icon" aria-hidden="true">🔒</div>
+        <div>
+          <h3>Your data stays on your device</h3>
+          <p>Nothing you enter is sent to a server, saved anywhere, or shared. All calculations run entirely in your browser. Close the tab and it's gone. However, do not enter values on a public or shared computer where others could see your screen.</p>
+        </div>
+      </div>
+      <div class="d-item">
+        <div class="d-icon" aria-hidden="true">📅</div>
+        <div>
+          <h3>Numbers are 2026-specific and Tennessee-specific</h3>
+          <p>Federal tax brackets, contribution limits, Social Security caps, and the Child Tax Credit all change year to year. This tool uses <b>2026 IRS figures</b> and assumes <b>Tennessee</b> (no state income tax). If you live in a state with an income tax, subtract that from the take-home figures separately. The tool also does not model local taxes, Roth 401(k), itemized deductions, or self-employment income.</p>
+        </div>
+      </div>
+      <div class="d-item">
+        <div class="d-icon" aria-hidden="true">⚠️</div>
+        <div>
+          <h3>No warranty on accuracy</h3>
+          <p>Every effort has been made to reflect current tax law correctly, but calculations may contain errors, simplifications, or outdated assumptions. Your actual paychecks, tax return, and financial outcomes may differ significantly. The creator is not liable for any decisions made based on this tool's output.</p>
+        </div>
+      </div>
+      <div class="d-item">
+        <div class="d-icon" aria-hidden="true">👤</div>
+        <div>
+          <h3>Consult a professional before acting</h3>
+          <p>Before making any tax, retirement, savings, or major purchase decision, verify the numbers with a qualified CPA or fiduciary financial advisor who understands your specific situation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <label class="d-check"><input type="checkbox" id="acceptChk"> <span>I understand — this is for planning only, not professional advice</span></label>
+      <button type="button" id="acceptBtn" disabled>Continue to the tool</button>
+    </div>
+  </div>
+</div>
+<div class="wrap">
+
+  <header class="head">
+    <p class="eyebrow">Household take-home · savings runway</p>
+    <div class="hero-num">
+      <span class="big" id="heroTake">—</span>
+      <span class="unit">combined take-home / month</span>
+    </div>
+    <div class="hero-sub">→ <b id="heroSave">—</b>/mo to goals after expenses <span class="mult" id="heroMult"></span>
+      <span class="ret">+ <b id="heroRet">—</b>/mo building in retirement accounts (incl. match)</span>
+    </div>
+  </header>
+
+  <p class="disclaimer-strip"><b>For planning only</b> — not tax, financial, or legal advice. Uses 2026 federal rules and assumes Tennessee (no state income tax). Verify with a CPA or advisor before acting.</p>
+
+  <!-- INCOME -->
+  <div class="card">
+    <div class="card-lab"><h2>Household income</h2></div>
+    <div class="pers-row">
+      <div class="pers-name">You</div>
+      <div class="grid4">
+        <div class="field"><label for="hisOld">Old salary</label><div class="input-money"><span>$</span><input type="number" id="hisOld" value="0" min="0" step="1000"></div></div>
+        <div class="field"><label for="hisNew">New salary</label><div class="input-money"><span>$</span><input type="number" id="hisNew" value="0" min="0" step="1000"></div></div>
+        <div class="field">
+          <label for="bonus">Bonus <span class="unit-toggle inline" data-target="bonus" role="group" aria-label="Bonus frequency"><button type="button" class="active" data-unit="yr">/yr</button><button type="button" data-unit="mo">/mo</button></span></label>
+          <div class="input-money"><span>$</span><input type="number" id="bonus" value="0" min="0" step="500"></div>
+        </div>
+        <div class="field"><label for="hisRaise">Annual raise</label><div class="input-pct"><input type="number" id="hisRaise" value="0" min="0" max="25" step="0.5"><span>%</span></div></div>
+      </div>
+    </div>
+    <div class="pers-row">
+      <div class="pers-name">Spouse</div>
+      <div class="grid4">
+        <div class="field"><label for="herOld">Old salary</label><div class="input-money"><span>$</span><input type="number" id="herOld" value="0" min="0" step="1000"></div></div>
+        <div class="field"><label for="herNew">New salary</label><div class="input-money"><span>$</span><input type="number" id="herNew" value="0" min="0" step="1000"></div></div>
+        <div class="field">
+          <label for="herBonus">Bonus <span class="unit-toggle inline" data-target="herBonus" role="group" aria-label="Spouse bonus frequency"><button type="button" class="active" data-unit="yr">/yr</button><button type="button" data-unit="mo">/mo</button></span></label>
+          <div class="input-money"><span>$</span><input type="number" id="herBonus" value="0" min="0" step="500"></div>
+        </div>
+        <div class="field"><label for="herRaise">Annual raise</label><div class="input-pct"><input type="number" id="herRaise" value="0" min="0" max="25" step="0.5"><span>%</span></div></div>
+      </div>
+    </div>
+
+    <div class="subhead">Retirement contributions (pre-tax 401k)</div>
+    <div class="grid4">
+      <div class="field">
+        <div class="lbl-row"><label for="hisPct">You contribute</label><button type="button" class="info" data-help="hisPct" aria-expanded="false" aria-label="How to fill in your contribution percent">?</button></div>
+        <div class="input-pct"><input type="number" id="hisPct" value="0" min="0" max="90" step="0.5"><span>%</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="hisMatch">Your match cap</label><button type="button" class="info" data-help="hisMatch" aria-expanded="false" aria-label="How to fill in your employer match">?</button></div>
+        <div class="input-pct"><input type="number" id="hisMatch" value="0" min="0" max="25" step="0.5"><span>%</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="herPct">Spouse contributes</label><button type="button" class="info" data-help="herPct" aria-expanded="false" aria-label="How to fill in spouse contribution percent">?</button></div>
+        <div class="input-pct"><input type="number" id="herPct" value="0" min="0" max="90" step="0.5"><span>%</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="herMatch">Spouse match cap</label><button type="button" class="info" data-help="herMatch" aria-expanded="false" aria-label="How to fill in spouse employer match">?</button></div>
+        <div class="input-pct"><input type="number" id="herMatch" value="0" min="0" max="25" step="0.5"><span>%</span></div>
+      </div>
+    </div>
+    <div id="helpPanelRetire" class="help-panel violet" role="region" aria-live="polite"></div>
+    <p class="hint">Tap the <b>?</b> on any field for what it means and where to find the value on your pay stub or benefits site.</p>
+
+    <div class="subhead">Existing retirement balances</div>
+    <div class="grid3">
+      <div class="field">
+        <div class="lbl-row"><label for="hisBal">Your balance</label><button type="button" class="info" data-help="hisBal" aria-expanded="false" aria-label="How to fill in your retirement balance">?</button></div>
+        <div class="input-money"><span>$</span><input type="number" id="hisBal" value="0" min="0" step="1000"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="herBal">Spouse balance</label><button type="button" class="info" data-help="herBal" aria-expanded="false" aria-label="How to fill in spouse retirement balance">?</button></div>
+        <div class="input-money"><span>$</span><input type="number" id="herBal" value="0" min="0" step="1000"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="retGrow">Expected growth</label><button type="button" class="info" data-help="retGrow" aria-expanded="false" aria-label="How to fill in expected growth rate">?</button></div>
+        <div class="input-pct"><input type="number" id="retGrow" value="0" min="0" max="15" step="0.5"><span>%</span></div>
+      </div>
+    </div>
+    <p class="hint">Add your and your spouse's current 401(k), IRA, and other retirement account totals. The growth rate is the long-term average return the market has produced (7% is a common conservative planning figure).</p>
+
+    <div class="subhead grn">Pre-tax benefits &amp; child tax credit</div>
+    <div class="grid4">
+      <div class="field">
+        <div class="lbl-row"><label for="kids">Kids under 17</label><button type="button" class="info" data-help="kids" aria-expanded="false" aria-label="How to fill in kids under 17">?</button></div>
+        <div class="input-money" style="padding-left:0"><input type="number" id="kids" value="0" min="0" max="12" step="1" style="padding-left:14px"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="prem">Health premiums /mo</label><button type="button" class="info" data-help="prem" aria-expanded="false" aria-label="How to fill in health premiums">?</button></div>
+        <div class="input-money"><span>$</span><input type="number" id="prem" value="0" min="0" step="25"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="hsa">HSA /yr</label><button type="button" class="info" data-help="hsa" aria-expanded="false" aria-label="How to fill in HSA">?</button></div>
+        <div class="input-money"><span>$</span><input type="number" id="hsa" value="0" min="0" step="250"></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label for="depfsa">Dep-care FSA /yr</label><button type="button" class="info" data-help="depfsa" aria-expanded="false" aria-label="How to fill in dependent care FSA">?</button></div>
+        <div class="input-money"><span>$</span><input type="number" id="depfsa" value="0" min="0" step="250"></div>
+      </div>
+    </div>
+    <div id="helpPanel" class="help-panel" role="region" aria-live="polite"></div>
+    <p class="hint">Tap the <b>?</b> on any field above for what it means and where to find the number. Child Tax Credit is $2,200 per qualifying child under 17 for 2026 (full credit under $400K joint income).</p>
+  </div>
+
+  <!-- TAKE-HOME -->
+  <div class="card">
+    <div class="card-lab"><h2>Combined take-home</h2></div>
+    <div class="ledger">
+      <div class="lrow"><span class="lab"><span>Combined gross</span><button type="button" class="info" data-help="lGross" aria-label="How combined gross is calculated">?</button></span><span class="val" id="lGross">—</span></div>
+      <div class="lrow ret"><span class="lab"><span>401(k) contributions (pre-tax)</span><button type="button" class="info" data-help="l401" aria-label="How 401k is calculated">?</button></span><span class="val" id="l401">—</span></div>
+      <div class="lrow minus" id="rowCaf"><span class="lab"><span>Pre-tax benefits (premiums, HSA, FSA)</span><button type="button" class="info" data-help="lCaf" aria-label="How pre-tax benefits work">?</button></span><span class="val" id="lCaf">—</span></div>
+      <div class="lrow minus"><span class="lab"><span>Federal income tax (MFJ)</span><button type="button" class="info" data-help="lFit" aria-label="How federal income tax is calculated">?</button></span><span class="val" id="lFit">—</span></div>
+      <div class="lrow credit" id="rowCtc"><span class="lab"><span id="ctcLab">Child tax credit</span><button type="button" class="info" data-help="lCtc" aria-label="How the child tax credit is calculated">?</button></span><span class="val" id="lCtc">—</span></div>
+      <div class="lrow minus"><span class="lab"><span>Social Security + Medicare</span><button type="button" class="info" data-help="lFica" aria-label="How Social Security and Medicare are calculated">?</button></span><span class="val" id="lFica">—</span></div>
+      <div class="lrow total"><span class="lab"><span>Take-home pay</span><button type="button" class="info" data-help="lTake" aria-label="How take-home pay is calculated">?</button></span><span class="val" id="lTake">—</span></div>
+      <div class="lrow-cmp" id="rowTakeCmp" style="display:none">
+        <div class="cmp-line"><span class="cmp-lab">On old salaries</span><span class="cmp-val" id="lTakeOld">—</span></div>
+        <div class="cmp-line cmp-gain"><span class="cmp-lab">Difference</span><span class="cmp-val" id="lTakeGain">—</span></div>
+      </div>
+    </div>
+    <div id="helpPanelTake" class="help-panel" role="region" aria-live="polite"></div>
+    <div class="field exp-field">
+      <div class="lbl-row">
+        <label for="exp">Monthly household expenses <span class="exp-max" id="expMax"></span></label>
+        <div class="unit-toggle inline" id="expModeTog" role="group" aria-label="Expenses mode">
+          <button type="button" class="active" data-mode="single">Single amount</button>
+          <button type="button" data-mode="items">Itemized list</button>
+        </div>
+      </div>
+      <div id="expSingle" class="input-money"><span>$</span><input type="number" id="exp" value="0" min="0" step="100"></div>
+      <div id="expItems" style="display:none">
+        <div id="expItemList"></div>
+        <div class="exp-items-foot">
+          <button type="button" class="add-exp" id="addExpItem">+ Add expense</button>
+          <div class="exp-total"><span class="lab">Total monthly expenses</span><span class="val" id="expItemTotal">$0</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Everything you spend monthly — mortgage/rent, food, utilities, etc. Cannot exceed your monthly take-home. Don't re-count health premiums or childcare here if you entered them as pre-tax benefits above.</p>
+    <div class="savings-out">
+      <div class="save-main">
+        <span class="lab">Left for goals each month</span>
+        <span class="val" id="oSave">—</span>
+      </div>
+      <div class="save-cmp" id="rowSaveCmp" style="display:none">
+        <div class="cmp-line"><span class="cmp-lab">On old salaries</span><span class="cmp-val" id="oSaveOld">—</span></div>
+        <div class="cmp-line cmp-gain"><span class="cmp-lab">Difference</span><span class="cmp-val" id="oSaveGain">—</span></div>
+      </div>
+    </div>
+    <div class="ret-out">
+      <div class="ret-row">
+        <span class="lab">Current balance <small>(you + spouse)</small></span>
+        <span class="val" id="oBal">—</span>
+      </div>
+      <div class="ret-row">
+        <span class="lab">Going in each month</span>
+        <span class="val" id="oRet">—</span>
+      </div>
+    </div>
+    <p class="warn" id="warnExp" style="display:none">Expenses are higher than take-home — nothing left for goals at these numbers.</p>
+  </div>
+
+  <!-- SALARY COMPARISON -->
+  <div class="card">
+    <div class="card-lab" style="justify-content:space-between;">
+      <h2>Old vs. new salary — money gained over time</h2>
+      <div class="tabs tbl-tabs" id="tblViewTabs" role="tablist" style="margin-left:auto;">
+        <button class="active" data-tv="year" type="button">That year only</button>
+        <button data-tv="cum" type="button">Running total</button>
+      </div>
+    </div>
+    <div id="gainChart"></div>
+    <div id="gainTableWrap" style="display:none">
+      <div class="tbl-head">
+        <div class="tbl-title">Year-by-year breakdown</div>
+      </div>
+      <div class="tbl-explainer" id="tblExplainer"></div>
+      <div class="table-scroll"><table class="gain">
+        <thead><tr>
+          <th>Year</th>
+          <th colspan="2" class="grp" id="thYou">You — take-home that year</th>
+          <th colspan="2" class="grp" id="thHer">Spouse — take-home that year</th>
+          <th class="grp-gain" id="thGain">Gained that year</th>
+        </tr>
+        <tr class="sub">
+          <th></th>
+          <th>Old</th><th>New</th>
+          <th>Old</th><th>New</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="gainTbody"></tbody>
+      </table></div>
+      <p class="hint">Take-home is what actually hits your bank account — after federal income tax, Social Security, Medicare, and your 401(k) contributions. Each person's pay grows by their annual raise % each year, applied to <b>both</b> the old and new paths so the comparison is fair. The <b>Gained</b> column is the exact difference for the household; the individual "Old" and "New" columns split joint federal tax proportionally, so they're a reasonable per-person breakdown but the household gain is the number that matters.</p>
+    </div>
+  </div>
+
+  <!-- GOAL EDITOR -->
+  <div class="card">
+    <div class="card-lab"><h2>What you're saving for <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);font-weight:500;margin-left:6px;">up to 3</span></h2></div>
+    <div id="goalList"></div>
+    <button class="add-goal" id="addGoal" type="button">+ Add a goal</button>
+    <p class="hint">Order matters in "One after another" mode — use the arrows to set priority. For a house down payment, enter the dollar amount (e.g. 10% of a $500K home = $50,000).</p>
+  </div>
+
+  <!-- TIMELINES -->
+  <div class="card">
+    <div class="card-lab"><h2>When each goal lands</h2></div>
+    <div class="tabs" id="modeTabs" role="tablist">
+      <button class="active" data-mode="focus">One at a time</button>
+      <button data-mode="split" id="tabSplit">All at once</button>
+      <button data-mode="seq" id="tabSeq">One after another</button>
+    </div>
+    <div class="goals" id="goalResults"></div>
+    <div class="alloc-bar" id="allocBar" style="display:none"></div>
+  </div>
+
+  <div class="foot">
+    <h3>Making it actually happen</h3>
+    <p>Every pre-tax dollar into the 401(k) only costs you about 78 cents of take-home at your bracket — the match on top is a guaranteed return no savings account can touch. <b>At minimum, contribute enough to capture the full match at both jobs.</b></p>
+    <p>The child tax credit lowers the tax you owe, so check your W-4 — if you get a big refund every year, you're over-withholding and could have that cash in each paycheck instead.</p>
+  </div>
+
+  <div class="disc-card">
+    <h3>How the numbers are calculated</h3>
+    <div class="disc-grid">
+      <div class="disc-group">
+        <div class="disc-lab">Tax figures (2026, MFJ)</div>
+        <ul>
+          <li>Federal brackets 10% / 12% / 22% / 24% / 32% / 35% / 37%</li>
+          <li>Standard deduction <b>$32,200</b></li>
+          <li>Child Tax Credit <b>$2,200</b>/child under 17 (phased out over $400K)</li>
+          <li>Social Security capped at <b>$184,500</b>/person</li>
+          <li>Tennessee — no state income tax</li>
+        </ul>
+      </div>
+      <div class="disc-group">
+        <div class="disc-lab">Pre-tax rules</div>
+        <ul>
+          <li><b>401(k)</b> lowers federal income tax only</li>
+          <li><b>Health premiums, HSA, dependent-care FSA</b> lower both federal income tax and FICA</li>
+        </ul>
+      </div>
+    </div>
+    <p class="disc-foot">Estimates for planning only, not tax or financial advice · dates counted from today</p>
+  </div>
+
+</div>
+
+<div class="footer-credits">
+  <h3>About this tool</h3>
+  <p>Built by <a href="https://www.linkedin.com/in/nicholasdavidson20" target="_blank" rel="noopener noreferrer">Nicholas Davidson</a> as a household financial planning tool — compare compensation scenarios, project savings goals, and see the long-term impact of raises and 401(k) decisions. Shared publicly in case it's useful. If you spot a bug or want to suggest an improvement, reach out on LinkedIn.</p>
+  <p><b style="color:var(--ink)">Full disclaimer:</b> This calculator is provided <b style="color:var(--ink)">"as-is"</b> for personal educational and planning purposes only. It is <b style="color:var(--ink)">not tax, financial, legal, or investment advice</b>, and no fiduciary relationship is created by using it. Calculations use published 2026 IRS figures and assume Tennessee residency (no state income tax) with W-2 wages and the standard deduction; results will not be accurate for other states, other years, self-employment income, itemizers, or Roth 401(k) contributions. Actual paycheck withholding, tax refunds, and financial outcomes may differ materially from the tool's estimates. All calculations run locally in your browser — no data is transmitted, stored, or shared. The creator makes no warranty of accuracy, fitness for a particular purpose, or continued availability, and assumes no liability for decisions made based on this tool's output. <b style="color:var(--ink)">Consult a qualified CPA or fiduciary financial advisor before making any tax, retirement, or major financial decision.</b></p>
+  <p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin-top:14px;">Tax figures reflect IRS Revenue Procedure 2025-32 for tax year 2026. Last verified: July 2026.</p>
+</div>
+
+<script>
+(function(){
+  // Disclaimer modal
+  var modal=document.getElementById('disclaimerModal');
+  var chk=document.getElementById('acceptChk');
+  var btn=document.getElementById('acceptBtn');
+  chk.addEventListener('change',function(){ btn.disabled=!chk.checked; });
+  btn.addEventListener('click',function(){
+    if(!chk.checked)return;
+    modal.classList.add('hidden');
+    document.body.style.overflow='';
+  });
+  document.body.style.overflow='hidden';
+})();
+(function(){
+  var STD_MFJ=32200, SS_CAP=184500, SS=0.062, MED=0.0145, ADDL_MED=0.009, ADDL_MED_MFJ=250000;
+  var CTC_PER=2200, CTC_PHASE=400000, CTC_REFUND=1700;
+  var CURRENT_SALARY=73500, MAX_GOALS=3;
+  var BR=[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]];
+
+  var state={
+    hisOld:0, hisNew:0, bonus:0, herOld:0, herNew:0, herBonus:0, exp:0,
+    bonusUnit:'yr', herBonusUnit:'yr',
+    hisRaise:0, herRaise:0,
+    hisPct:0, hisMatch:0, herPct:0, herMatch:0,
+    kids:0, prem:0, hsa:0, depfsa:0,
+    hisBal:0, herBal:0, retGrow:0,
+    expMode:'single', expItems:[], nextExpId:1,
+    mode:'focus', tableView:'year',
+    goals:[
+      {id:1, name:'Goal 1', amt:0, alloc:null}
+    ],
+    nextId:2
+  };
+
+  var $=function(id){return document.getElementById(id);};
+  var money=function(n){var s=n<0?'-':'';return s+'$'+Math.round(Math.abs(n)).toLocaleString('en-US');};
+
+  function fedTax(ti){ if(ti<=0)return 0; var t=0,prev=0; for(var i=0;i<BR.length;i++){var cap=BR[i][0],rate=BR[i][1];var slice=Math.min(ti,cap)-prev;if(slice>0)t+=slice*rate;prev=cap;if(ti<=cap)break;} return t; }
+  function fica(w){ w=Math.max(0,w); return SS*Math.min(w,SS_CAP)+MED*w; }
+
+  function scenario(hisSalary,hisBonus,herSalary,herBonus,expenses){
+    var hisW=hisSalary+hisBonus, herW=herSalary+herBonus, gross=hisW+herW;
+    var his401=hisW*state.hisPct/100, her401=herW*state.herPct/100, tot401=his401+her401;
+    var matchAmt=hisW*Math.min(state.hisPct,state.hisMatch)/100 + herW*Math.min(state.herPct,state.herMatch)/100;
+    var caf=state.prem*12 + state.hsa + state.depfsa;             // pre-tax benefits (reduce income tax AND FICA)
+    // income tax
+    var taxable=Math.max(0,gross-tot401-caf-STD_MFJ);
+    var fedGross=fedTax(taxable);
+    // child tax credit
+    var magi=Math.max(0,gross-tot401-caf);
+    var reduction=state.kids>0?Math.ceil(Math.max(0,magi-CTC_PHASE)/1000)*50:0;
+    var ctc=Math.max(0,state.kids*CTC_PER-reduction);
+    var creditApplied=Math.min(ctc,fedGross)+Math.min(Math.max(0,ctc-fedGross),state.kids*CTC_REFUND);
+    var fitNet=fedGross-creditApplied;
+    // FICA (on wages minus cafeteria, allocated by wage share)
+    var hisCaf=gross>0?caf*hisW/gross:0, herCaf=gross>0?caf*herW/gross:0;
+    var hisFica=fica(hisW-hisCaf), herFica=fica(herW-herCaf);
+    var ff=hisFica+herFica+ADDL_MED*Math.max(0,(gross-caf)-ADDL_MED_MFJ);
+    var take=gross-tot401-caf-fitNet-ff;
+    return {gross:gross,c401:tot401,match:matchAmt,caf:caf,fedGross:fedGross,credit:creditApplied,fitNet:fitNet,fica:ff,take:take,moTake:take/12,save:take/12-expenses,retire:tot401+matchAmt,
+      hisW:hisW,herW:herW,his401:his401,her401:her401,hisCaf:hisCaf,herCaf:herCaf,hisFica:hisFica,herFica:herFica};
+  }
+
+  function fmtMonths(m){ m=Math.ceil(m); if(!isFinite(m)||m<=0)return '—'; if(m<12)return m+(m===1?' month':' months'); var y=Math.floor(m/12),r=m%12; return y+' yr'+(r?' '+r+' mo':''); }
+  function arrival(m){ if(!isFinite(m)||m<=0)return ''; var d=new Date();d.setDate(1);d.setMonth(d.getMonth()+Math.ceil(m)); return d.toLocaleString('en-US',{month:'long',year:'numeric'}); }
+  function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+  var MAX_EXP_ITEMS=25;
+  function expTotal(){
+    if(state.expMode==='single') return Math.max(0,state.exp);
+    return state.expItems.reduce(function(s,it){return s+Math.max(0,it.amt||0);},0);
+  }
+  function renderExpItems(){
+    var list=$('expItemList'); list.innerHTML='';
+    state.expItems.forEach(function(it,i){
+      var row=document.createElement('div'); row.className='exp-item';
+      row.innerHTML=
+        '<input type="text" maxlength="40" data-ex="name" data-id="'+it.id+'" value="'+esc(it.name||'')+'" placeholder="e.g. Rent, Groceries, Car payment">'+
+        '<div class="input-money"><span>$</span><input type="number" min="0" step="10" data-ex="amt" data-id="'+it.id+'" value="'+(it.amt||0)+'"></div>'+
+        '<button type="button" class="icon-btn del" data-ex="del" data-id="'+it.id+'" title="Remove" aria-label="Remove expense">&#10005;</button>';
+      list.appendChild(row);
+    });
+    $('addExpItem').disabled=state.expItems.length>=MAX_EXP_ITEMS;
+    $('addExpItem').textContent=state.expItems.length>=MAX_EXP_ITEMS?('Max '+MAX_EXP_ITEMS+' items'):'+ Add expense';
+  }
+  function bonusYr(){ return state.bonus*(state.bonusUnit==='mo'?12:1); }
+  function herBonusYr(){ return state.herBonus*(state.herBonusUnit==='mo'?12:1); }
+  function nowScenario(){ return scenario(state.hisNew,bonusYr(),state.herNew,herBonusYr(),expTotal()); }
+  function baseScenario(){ return scenario(state.hisOld,0,state.herOld,0,expTotal()); }
+  function personSplit(s){
+    var hisBase=Math.max(0,s.hisW-s.his401-s.hisCaf), herBase=Math.max(0,s.herW-s.her401-s.herCaf);
+    var tot=hisBase+herBase;
+    var hisFit=tot>0?s.fitNet*hisBase/tot:0, herFit=s.fitNet-hisFit;
+    return { his:s.hisW-s.his401-s.hisCaf-hisFit-s.hisFica, her:s.herW-s.her401-s.herCaf-herFit-s.herFica };
+  }
+
+  function renderEditor(){
+    var list=$('goalList'); list.innerHTML='';
+    state.goals.forEach(function(g,i){
+      var row=document.createElement('div'); row.className='goal-edit';
+      row.innerHTML=
+        '<div class="ge-top">'+
+          '<span class="ge-idx">'+(i+1)+'</span>'+
+          '<span class="spacer"></span>'+
+          '<button class="icon-btn" data-act="up" data-id="'+g.id+'" title="Move up" '+(i===0?'disabled':'')+'>&#8593;</button>'+
+          '<button class="icon-btn" data-act="down" data-id="'+g.id+'" title="Move down" '+(i===state.goals.length-1?'disabled':'')+'>&#8595;</button>'+
+          '<button class="icon-btn del" data-act="del" data-id="'+g.id+'" title="Remove goal" '+(state.goals.length<=1?'disabled':'')+'>&#10005;</button>'+
+        '</div>'+
+        '<div class="ge-fields">'+
+          '<div class="field"><label>Goal name</label><input type="text" maxlength="40" data-f="name" data-id="'+g.id+'" value="'+esc(g.name)+'" placeholder="e.g. New car"></div>'+
+          '<div class="field"><label>Target amount</label><div class="input-money"><span>$</span><input type="number" min="0" step="500" data-f="amt" data-id="'+g.id+'" value="'+g.amt+'"></div></div>'+
+        '</div>';
+      list.appendChild(row);
+    });
+    $('addGoal').disabled = state.goals.length>=MAX_GOALS;
+    $('addGoal').textContent = state.goals.length>=MAX_GOALS ? 'Maximum of 3 goals' : '+ Add a goal';
+  }
+
+  $('goalList').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    var id=+b.dataset.id, i=state.goals.findIndex(function(g){return g.id===id;});
+    if(i<0)return;
+    if(b.dataset.act==='del' && state.goals.length>1){ state.goals.splice(i,1); }
+    else if(b.dataset.act==='up' && i>0){ var t=state.goals[i-1]; state.goals[i-1]=state.goals[i]; state.goals[i]=t; }
+    else if(b.dataset.act==='down' && i<state.goals.length-1){ var t2=state.goals[i+1]; state.goals[i+1]=state.goals[i]; state.goals[i]=t2; }
+    renderEditor(); render();
+  });
+  $('goalList').addEventListener('input',function(e){
+    var inp=e.target.closest('input'); if(!inp||!inp.dataset.f)return;
+    var g=state.goals.find(function(x){return x.id===+inp.dataset.id;}); if(!g)return;
+    if(inp.dataset.f==='name'){ g.name=inp.value; renderResultsOnly(); }
+    else { g.amt=Math.max(0,+inp.value||0); render(); }
+  });
+  $('addGoal').addEventListener('click',function(){
+    if(state.goals.length>=MAX_GOALS)return;
+    state.goals.push({id:state.nextId++, name:'New goal', amt:10000, alloc:null});
+    renderEditor(); render();
+    var inputs=$('goalList').querySelectorAll('input[data-f="name"]');
+    var last=inputs[inputs.length-1]; if(last){last.focus();last.select();}
+  });
+
+  function defaultAllocs(S){ var n=state.goals.length, base=Math.floor(S/n); state.goals.forEach(function(g){ if(g.alloc===null||g.alloc===undefined) g.alloc=Math.max(0,base); }); }
+
+  function renderResultsOnly(){
+    var now=nowScenario(), base=baseScenario();
+    var S=Math.max(0,now.save), baseSave=Math.max(0,base.save);
+    var box=$('goalResults'); box.innerHTML='';
+    var bar=$('allocBar'); bar.style.display='none';
+
+    $('tabSeq').disabled = state.goals.length<2;
+    $('tabSplit').disabled = state.goals.length<2;
+    if(state.goals.length<2 && state.mode!=='focus'){ state.mode='focus';
+      document.querySelectorAll('#modeTabs button').forEach(function(x){x.classList.toggle('active',x.dataset.mode==='focus');});
+    }
+    if(state.mode==='split') defaultAllocs(S);
+
+    var cumulative=0, cumulativeOld=0;
+    state.goals.forEach(function(g,i){
+      var card=document.createElement('div'); card.className='goal';
+      var dateTxt='—', whenTxt='', deltaHtml='', allocHtml='';
+      if(state.mode==='focus'){
+        // default focus allocation to full available savings the first time (or whenever cap changes below it)
+        if(g.focusAlloc===undefined||g.focusAlloc===null) g.focusAlloc=S;
+        var a=Math.min(Math.max(0,g.focusAlloc),S);
+        var mB=a>0?g.amt/a:Infinity, mC=baseSave>0?g.amt/baseSave:Infinity;
+        dateTxt=fmtMonths(mB); whenTxt=arrival(mB)?('reached by '+arrival(mB)):'';
+        allocHtml='<div class="alloc"><label>Saving toward this / month <span class="alloc-max">max '+money(S)+'</span></label>'+
+          '<div class="input-money"><span>$</span><input type="number" min="0" max="'+Math.max(0,Math.floor(S))+'" step="50" data-focus="'+g.id+'" value="'+Math.round(a)+'"></div></div>';
+        if(baseSave>0&&S>0&&a>0){
+          var diff=mC-mB;
+          if(diff>=1) deltaHtml='<span class="g-lab">On old salaries (all savings):</span> '+fmtMonths(mC)+' &middot; <b class="g-sooner">'+fmtMonths(diff)+' sooner with the raise</b>';
+          else if(diff<=-1) deltaHtml='<span class="g-lab">On old salaries (all savings):</span> '+fmtMonths(mC)+' &middot; <b class="g-later">'+fmtMonths(-diff)+' later</b>';
+          else deltaHtml='<span class="g-lab">No change vs. old salaries</span> — set them apart to compare';
+        } else if(a<=0){
+          deltaHtml='<span class="g-lab">Set an amount above to see the timeline</span>';
+        }
+      } else if(state.mode==='split'){
+        var a=Math.max(0,g.alloc||0); var mS=a>0?g.amt/a:Infinity;
+        dateTxt=fmtMonths(mS); whenTxt=arrival(mS)?('reached by '+arrival(mS)):'';
+        allocHtml='<div class="alloc"><label>Saving toward this / month</label><div class="input-money"><span>$</span><input type="number" min="0" step="50" data-alloc="'+g.id+'" value="'+a+'"></div></div>';
+      } else {
+        var mine=S>0?g.amt/S:Infinity; var tot=cumulative+mine; cumulative=tot;
+        dateTxt=fmtMonths(tot); whenTxt=arrival(tot)?('reached by '+arrival(tot)):'';
+        // parallel old-salary timeline
+        var mineOld=baseSave>0?g.amt/baseSave:Infinity;
+        var totOld=cumulativeOld+mineOld; cumulativeOld=totOld;
+        var stepLine = i===0
+          ? ('<span class="g-lab">All '+money(S)+'/mo goes here first</span>')
+          : ('<span class="g-lab">Starts after goal '+i+' &middot; '+fmtMonths(mine)+' of saving</span>');
+        var compLine='';
+        if(baseSave>0&&S>0&&isFinite(totOld)){
+          var diff=totOld-tot;
+          if(diff>=1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-sooner">'+fmtMonths(diff)+' sooner with the raise</b></div>';
+          else if(diff<=-1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-later">'+fmtMonths(-diff)+' later</b></div>';
+          else compLine='<div class="g-comp"><span class="g-lab">No change vs. old salaries</span></div>';
+        }
+        deltaHtml = stepLine + compLine;
+      }
+      card.innerHTML=
+        '<div class="g-top"><span class="g-name">'+esc(g.name||('Goal '+(i+1)))+'</span><span class="g-target">'+money(g.amt)+'</span></div>'+
+        '<div class="g-date">'+dateTxt+'</div><div class="g-when">'+whenTxt+'</div>'+
+        (allocHtml||'')+(deltaHtml?('<div class="g-delta">'+deltaHtml+'</div>'):'');
+      box.appendChild(card);
+    });
+
+    if(state.mode==='split'){
+      var totalAlloc=state.goals.reduce(function(s,g){return s+Math.max(0,g.alloc||0);},0);
+      bar.style.display='flex'; var diff=S-totalAlloc;
+      var status=Math.abs(diff)<1?'':(diff<0?' &middot; <span class="over">'+money(-diff)+'/mo over what you have</span>':' &middot; <span class="under">'+money(diff)+'/mo unassigned</span>');
+      bar.innerHTML='<span>Allocated: <b>'+money(totalAlloc)+'</b> of <b>'+money(S)+'</b>/mo'+status+'</span>';
+    }
+  }
+
+  $('goalResults').addEventListener('input',function(e){
+    var inp=e.target.closest('input[data-alloc],input[data-focus]'); if(!inp)return;
+    var isFocus=!!inp.dataset.focus;
+    var id=+((inp.dataset.alloc)||(inp.dataset.focus));
+    var g=state.goals.find(function(x){return x.id===id;}); if(!g)return;
+    var now=nowScenario(), S=Math.max(0,now.save);
+    var v=Math.max(0,+inp.value||0);
+    if(isFocus){
+      // cap silently at S; update the input if user typed higher
+      if(v>S){ v=S; inp.value=Math.round(S); }
+      g.focusAlloc=v;
+      renderFocusDatesInPlace(S);
+    } else {
+      g.alloc=v;
+      renderSplitDatesInPlace();
+    }
+  });
+  function renderFocusDatesInPlace(S){
+    var cards=$('goalResults').querySelectorAll('.goal');
+    state.goals.forEach(function(g,i){
+      var card=cards[i]; if(!card)return;
+      var a=Math.min(Math.max(0,g.focusAlloc||0),S);
+      var m=a>0?g.amt/a:Infinity;
+      card.querySelector('.g-date').textContent=fmtMonths(m);
+      card.querySelector('.g-when').textContent=arrival(m)?('reached by '+arrival(m)):'';
+    });
+  }
+  function renderSplitDatesInPlace(){
+    var now=nowScenario(), S=Math.max(0,now.save);
+    var cards=$('goalResults').querySelectorAll('.goal');
+    state.goals.forEach(function(g,i){ var card=cards[i]; if(!card)return; var a=Math.max(0,g.alloc||0), m=a>0?g.amt/a:Infinity; card.querySelector('.g-date').textContent=fmtMonths(m); card.querySelector('.g-when').textContent=arrival(m)?('reached by '+arrival(m)):''; });
+    var totalAlloc=state.goals.reduce(function(s,g){return s+Math.max(0,g.alloc||0);},0);
+    var bar=$('allocBar'), diff=S-totalAlloc;
+    var status=Math.abs(diff)<1?'':(diff<0?' &middot; <span class="over">'+money(-diff)+'/mo over what you have</span>':' &middot; <span class="under">'+money(diff)+'/mo unassigned</span>');
+    bar.innerHTML='<span>Allocated: <b>'+money(totalAlloc)+'</b> of <b>'+money(S)+'</b>/mo'+status+'</span>';
+  }
+
+  function render(){
+    var now=nowScenario(), base=baseScenario();
+    var save=now.save, baseSave=base.save;
+
+    $('heroTake').textContent=money(now.moTake);
+    $('heroSave').textContent=money(Math.max(0,save));
+    $('heroRet').textContent=money(now.retire/12);
+    if(baseSave>0 && save>0){ $('heroMult').style.display=''; $('heroMult').textContent=(save/baseSave).toFixed(1)+'\u00d7 current pace'; }
+    else { $('heroMult').style.display='none'; }
+
+    $('lGross').textContent=money(now.gross);
+    $('l401').textContent='\u2013'+money(now.c401);
+    $('lCaf').textContent='\u2013'+money(now.caf);
+    $('rowCaf').style.display = now.caf>0 ? 'flex':'none';
+    $('lFit').textContent='\u2013'+money(now.fedGross);
+    $('ctcLab').textContent='Child tax credit'+(state.kids>0?(' ('+state.kids+' kid'+(state.kids>1?'s':'')+')'):'');
+    $('lCtc').textContent='+'+money(now.credit);
+    $('rowCtc').style.display = now.credit>0 ? 'flex':'none';
+    $('lFica').textContent='\u2013'+money(now.fica);
+    $('lTake').innerHTML=money(now.take)+' <small>'+money(now.moTake)+'/mo</small>';
+    // take-home comparison (old vs new)
+    var takeGain=now.take-base.take;
+    var showTakeCmp = (state.hisOld>0||state.herOld>0) && (state.hisNew>0||state.herNew>0);
+    $('rowTakeCmp').style.display = showTakeCmp?'block':'none';
+    if(showTakeCmp){
+      $('lTakeOld').innerHTML=money(base.take)+' <small>'+money(base.moTake)+'/mo</small>';
+      var gainCls = takeGain>0?'':(takeGain<0?'neg':'zero');
+      $('rowTakeCmp').querySelector('.cmp-gain').className='cmp-line cmp-gain '+gainCls;
+      var sign = takeGain>=0?'+':'\u2212';
+      $('lTakeGain').innerHTML=sign+money(Math.abs(takeGain))+'/yr <small>'+sign+money(Math.abs(takeGain)/12)+'/mo</small>';
+    }
+    $('oSave').textContent=money(Math.max(0,save));
+    // savings comparison
+    var saveGain = Math.max(0,save) - Math.max(0,base.save);
+    var showSaveCmp = showTakeCmp;
+    $('rowSaveCmp').style.display = showSaveCmp?'block':'none';
+    if(showSaveCmp){
+      $('oSaveOld').textContent=money(Math.max(0,base.save));
+      var sgCls = saveGain>0?'':(saveGain<0?'neg':'zero');
+      $('rowSaveCmp').querySelector('.cmp-gain').className='cmp-line cmp-gain '+sgCls;
+      var sSign = saveGain>=0?'+':'\u2212';
+      $('oSaveGain').textContent=sSign+money(Math.abs(saveGain))+'/mo';
+    }
+    var totBal=state.hisBal+state.herBal;
+    $('oBal').textContent=money(totBal);
+    $('oRet').innerHTML=money(now.retire/12)+' <small>'+money(now.c401/12)+' yours + '+money(now.match/12)+' match</small>';
+    // expense max hint + itemized total (moTake must be computed first)
+    var moTake=Math.max(0,now.moTake);
+    var eTot=expTotal();
+    $('warnExp').style.display = save<=0 && eTot>0 ? 'block':'none';
+    var etEl=$('expItemTotal');
+    if(etEl){ etEl.textContent=money(eTot); etEl.classList.toggle('over', moTake>0 && eTot>moTake); }
+    var expMax=$('expMax');
+    if(moTake<=0){ expMax.textContent=''; expMax.classList.remove('over'); $('exp').removeAttribute('max'); }
+    else {
+      $('exp').max=Math.floor(moTake);
+      if(eTot>moTake){ expMax.textContent='max '+money(moTake)+' (over by '+money(eTot-moTake)+')'; expMax.classList.add('over'); }
+      else { expMax.textContent='max '+money(moTake); expMax.classList.remove('over'); }
+    }
+
+    renderResultsOnly();
+    renderGain();
+  }
+
+  function renderGain(){
+    var years=[1,2,3,4,5,6,7,8,9,10], milestones=[1,2,3,4,5,10];
+    var hg=1+state.hisRaise/100, rg=1+state.herRaise/100;
+    var series=[]; // one entry per year
+    var cum={oldHis:0,oldHer:0,newHis:0,newHer:0,oldTake:0,newTake:0};
+    var g=1+state.retGrow/100, startBal=state.hisBal+state.herBal;
+    var oldBal=startBal, newBal=startBal; // parallel investment balances
+    for(var y=1;y<=10;y++){
+      var f1=Math.pow(hg,y-1), f2=Math.pow(rg,y-1);
+      var o=scenario(state.hisOld*f1,0,state.herOld*f2,0,expTotal());
+      var n=scenario(state.hisNew*f1,bonusYr()*f1,state.herNew*f2,herBonusYr()*f2,expTotal());
+      var oP=personSplit(o), nP=personSplit(n);
+      // grow existing balance, then add this year's contributions (mid-year approx: contributions get half a year of growth)
+      oldBal = oldBal*g + o.retire*Math.sqrt(g);
+      newBal = newBal*g + n.retire*Math.sqrt(g);
+      var yr={
+        yrOldHis:oP.his, yrOldHer:oP.her, yrNewHis:nP.his, yrNewHer:nP.her,
+        yrOldTake:o.take, yrNewTake:n.take, yrGain:n.take-o.take
+      };
+      cum.oldHis+=oP.his; cum.oldHer+=oP.her; cum.newHis+=nP.his; cum.newHer+=nP.her;
+      cum.oldTake+=o.take; cum.newTake+=n.take;
+      series.push({y:y,
+        oldTake:cum.oldTake, newTake:cum.newTake,
+        oldTakePlusRet:cum.oldTake+oldBal,
+        newTakePlusRet:cum.newTake+newBal,
+        oldBal:oldBal, newBal:newBal,
+        oldHis:cum.oldHis, oldHer:cum.oldHer, newHis:cum.newHis, newHer:cum.newHer,
+        thGain:cum.newTake-cum.oldTake, retGain:newBal-oldBal,
+        // per-year values
+        yrOldTake:o.take, yrNewTake:n.take,
+        yrOldRet:o.retire, yrNewRet:n.retire,
+        yrOldTakePlusRet:o.take+o.retire, yrNewTakePlusRet:n.take+n.retire,
+        yrOldHis:yr.yrOldHis, yrOldHer:yr.yrOldHer, yrNewHis:yr.yrNewHis, yrNewHer:yr.yrNewHer,
+        yrGain:yr.yrGain, yrRetGain:n.retire-o.retire});
+    }
+    var last=series[series.length-1];
+    var chart=$('gainChart');
+
+    if(last.thGain<=0 && last.retGain<=0){
+      chart.innerHTML='<p class="hint" style="font-style:normal">Set the <b>new</b> salaries above higher than the <b>old</b> ones to see the gain. Right now the new household total is not higher, so there is nothing to compare.</p>';
+      $('gainTableWrap').style.display='none';
+      $('gainTbody').innerHTML='';
+      return;
+    } else {
+      $('gainTableWrap').style.display='block';
+      // pick field names based on toggle
+      var isCumChart=state.tableView==='cum';
+      var fNewTake=isCumChart?'newTake':'yrNewTake';
+      var fOldTake=isCumChart?'oldTake':'yrOldTake';
+      // retirement fields: cumulative view uses balance (grown portfolio), per-year uses annual contribution
+      var fNewRet =isCumChart?'newBal':'yrNewRet';
+      var fOldRet =isCumChart?'oldBal':'yrOldRet';
+
+      function buildChart(cfg){
+        // cfg: { fNew, fOld, color, label, title, mode }
+        var maxV=0;
+        series.forEach(function(s){ maxV=Math.max(maxV,s[cfg.fNew],s[cfg.fOld]); });
+        maxV=maxV*1.05;
+        var W=740, H=280, padL=64, padR=20, padT=22, padB=38;
+        var plotW=W-padL-padR, plotH=H-padT-padB;
+        var xOf=function(y){ return padL + (y-1)/9 * plotW; };
+        var yOf=function(v){ return padT + plotH - (maxV>0?(v/maxV)*plotH:0); };
+        var ticks=[]; for(var i=1;i<=4;i++) ticks.push(maxV*i/4);
+        function pathFor(field){ var d=''; series.forEach(function(s,i){ d+=(i===0?'M':'L')+xOf(s.y).toFixed(1)+','+yOf(s[field]).toFixed(1); }); return d; }
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+cfg.label+' over 10 years">';
+        ticks.forEach(function(v){
+          var yy=yOf(v);
+          svg+='<line x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'" stroke="#e6ece9"/>';
+          svg+='<text x="'+(padL-8)+'" y="'+(yy+4)+'" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#43606b">'+money(v)+'</text>';
+        });
+        svg+='<line x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'" stroke="#c7d1cc"/>';
+        milestones.forEach(function(y){ svg+='<text x="'+xOf(y)+'" y="'+(H-padB+22)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#43606b">Yr '+y+'</text>'; });
+        // shaded gap area between old and new
+        var areaD='';
+        series.forEach(function(s,i){ areaD+=(i===0?'M':'L')+xOf(s.y).toFixed(1)+','+yOf(s[cfg.fNew]).toFixed(1); });
+        for(var j=series.length-1;j>=0;j--){ areaD+='L'+xOf(series[j].y).toFixed(1)+','+yOf(series[j][cfg.fOld]).toFixed(1); }
+        areaD+='Z';
+        svg+='<path d="'+areaD+'" fill="'+cfg.color+'" opacity="0.10"/>';
+        // dashed old, solid new
+        svg+='<path d="'+pathFor(cfg.fOld)+'" fill="none" stroke="'+cfg.color+'" stroke-width="2" stroke-dasharray="5 5" opacity="0.7"/>';
+        svg+='<path d="'+pathFor(cfg.fNew)+'" fill="none" stroke="'+cfg.color+'" stroke-width="2.75"/>';
+        series.forEach(function(s){
+          var x=xOf(s.y);
+          svg+='<line class="vline" data-vl="'+s.y+'" x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+plotH)+'"/>';
+          svg+='<circle class="dot old" data-y="'+s.y+'" cx="'+x+'" cy="'+yOf(s[cfg.fOld])+'" r="3.5" fill="#fff" stroke="'+cfg.color+'" stroke-width="2" opacity="0.7"/>';
+          svg+='<circle class="dot new" data-y="'+s.y+'" cx="'+x+'" cy="'+yOf(s[cfg.fNew])+'" r="4" fill="#fff" stroke="'+cfg.color+'" stroke-width="2.5"/>';
+          var slotW=plotW/9;
+          svg+='<rect class="hit" data-y="'+s.y+'" x="'+(x-slotW/2)+'" y="'+padT+'" width="'+slotW+'" height="'+plotH+'"/>';
+        });
+        svg+='</svg>';
+
+        var legend='<div class="chart-legend">'+
+          '<span><i style="background:'+cfg.color+'"></i>New — '+cfg.label+'</span>'+
+          '<span><i style="background:'+cfg.color+';opacity:.5"></i>Old — '+cfg.label+'</span>'+
+          '</div>';
+        var chartHtml='<h3 class="mini-chart-title">'+cfg.title+'</h3>'+legend+'<div class="chart-wrap" data-chart="'+cfg.id+'">'+svg+'<div class="tooltip"></div></div>';
+        return {html:chartHtml, W:W, H:H, xOf:xOf, yOf:yOf, cfg:cfg};
+      }
+
+      var chartA = buildChart({id:'take', fNew:fNewTake, fOld:fOldTake, color:'#0d7a5f',
+        label:isCumChart?'take-home (running total)':'take-home this year',
+        title:isCumChart?'Take-home pay — running total over 10 years':'Take-home pay per year'});
+      var chartB = buildChart({id:'ret', fNew:fNewRet, fOld:fOldRet, color:'#5b4a9e',
+        label:isCumChart?'retirement portfolio':'retirement contribution + match',
+        title:isCumChart?'Retirement portfolio value — projected over 10 years':'Retirement contributions per year (yours + match)'});
+
+      var modeNote = isCumChart
+        ? 'Both charts show <b>running totals</b> — every dollar earned or saved from Year 1 through the point you hover.'
+        : 'Both charts show <b>that year only</b> — the take-home and retirement contribution for each single year.';
+      var balNote = startBal>0
+        ? ' Retirement includes your starting balance of <b>'+money(startBal)+'</b> growing at '+state.retGrow+'% per year on top of new contributions.'
+        : ' Retirement chart shows new contributions plus match, growing at '+state.retGrow+'% per year.';
+      var summary='<p class="chart-sum">'+modeNote+' Over the full 10 years — with '+state.hisRaise+'% annual raises for you and '+state.herRaise+'% for your spouse — the new scenario puts <b>'+money(last.thGain)+'</b> more in your pocket, plus <b>'+money(last.retGain)+'</b> more in retirement value: <b>'+money(last.thGain+last.retGain)+' total</b>.'+balNote+' Hover any point for that year\u2019s numbers.</p>';
+
+      chart.innerHTML='<div class="mini-chart">'+chartA.html+'</div>'+'<div class="mini-chart">'+chartB.html+'</div>'+summary;
+
+      // wire hover for each chart independently
+      [chartA, chartB].forEach(function(c){
+        var wrap=chart.querySelector('.chart-wrap[data-chart="'+c.cfg.id+'"]');
+        var tip=wrap.querySelector('.tooltip'), svgEl=wrap.querySelector('svg');
+        function showFor(year){
+          var s=series[year-1]; if(!s)return;
+          wrap.querySelectorAll('.dot').forEach(function(d){ d.classList.toggle('on', +d.dataset.y===year); });
+          wrap.querySelectorAll('.vline').forEach(function(l){ l.classList.toggle('on', +l.dataset.vl===year); });
+          var newV=s[c.cfg.fNew], oldV=s[c.cfg.fOld], diff=newV-oldV;
+          tip.innerHTML=
+            '<div class="tt-year">Year '+year+'</div>'+
+            '<div class="tt-row"><span class="k"><i style="background:'+c.cfg.color+'"></i>New</span><span class="v">'+money(newV)+'</span></div>'+
+            '<div class="tt-row"><span class="k"><i style="background:'+c.cfg.color+';opacity:.5"></i>Old</span><span class="v">'+money(oldV)+'</span></div>'+
+            '<div class="tt-row tt-total"><span class="k">Difference</span><span class="v">'+money(diff)+'</span></div>';
+          var svgRect=svgEl.getBoundingClientRect(), wrapRect=wrap.getBoundingClientRect();
+          var scale=svgRect.width/c.W;
+          var pxX=svgRect.left-wrapRect.left + c.xOf(year)*scale;
+          var pxY=svgRect.top-wrapRect.top + c.yOf(newV)*scale;
+          tip.style.left=pxX+'px'; tip.style.top=pxY+'px';
+          tip.classList.add('on');
+        }
+        function hideAll(){ wrap.querySelectorAll('.dot.on,.vline.on').forEach(function(el){ el.classList.remove('on'); }); tip.classList.remove('on'); }
+        wrap.querySelectorAll('.hit,.dot').forEach(function(el){
+          el.addEventListener('mouseenter',function(){ showFor(+el.dataset.y); });
+          el.addEventListener('click',function(){ showFor(+el.dataset.y); });
+          el.addEventListener('touchstart',function(e){ e.preventDefault(); showFor(+el.dataset.y); },{passive:false});
+        });
+        wrap.addEventListener('mouseleave',hideAll);
+      });
+    }
+
+    // headers + explainer flip based on toggle
+    var isCum=state.tableView==='cum';
+    $('thYou').textContent = isCum?'You — running total':'You — take-home that year';
+    $('thHer').textContent = isCum?'Spouse — running total':'Spouse — take-home that year';
+    $('thGain').textContent = isCum?'Gained (running total)':'Gained that year';
+    $('tblExplainer').innerHTML = isCum
+      ? '<b>Running total.</b> Each row shows every dollar earned from Year 1 through that year, added up. So Year 10 shows all take-home over the whole decade.'
+      : '<b>That year only.</b> Each row shows what you take home in that single year. Numbers grow because raises compound each year.';
+
+    var rows='';
+    milestones.forEach(function(y){
+      var s=series[y-1];
+      var lastRow=(y===10?' class="row-last"':'');
+      var oldHis = isCum?s.oldHis:s.yrOldHis;
+      var newHis = isCum?s.newHis:s.yrNewHis;
+      var oldHer = isCum?s.oldHer:s.yrOldHer;
+      var newHer = isCum?s.newHer:s.yrNewHer;
+      var gain   = isCum?s.thGain:s.yrGain;
+      rows+='<tr'+lastRow+'><td>Year '+y+'</td>'+
+        '<td>'+money(oldHis)+'</td>'+
+        '<td class="new">'+money(newHis)+'</td>'+
+        '<td>'+money(oldHer)+'</td>'+
+        '<td class="new">'+money(newHer)+'</td>'+
+        '<td class="gain-cell">'+money(gain)+'</td></tr>';
+    });
+    $('gainTbody').innerHTML=rows;
+  }
+
+  function num(el,key,max){ el.addEventListener('input',function(){ var v=Math.max(0,+this.value||0); if(max!==undefined)v=Math.min(max,v); state[key]=v; render(); }); }
+  num($('hisOld'),'hisOld'); num($('hisNew'),'hisNew'); num($('bonus'),'bonus');
+  num($('herOld'),'herOld'); num($('herNew'),'herNew'); num($('herBonus'),'herBonus');
+  $('exp').addEventListener('input',function(){
+    var v=Math.max(0,+this.value||0);
+    var now=nowScenario(), cap=Math.floor(Math.max(0,now.moTake));
+    if(cap>0 && v>cap){ v=cap; this.value=cap; }
+    state.exp=v; render();
+  });
+  num($('hisRaise'),'hisRaise',25); num($('herRaise'),'herRaise',25);
+  num($('hisPct'),'hisPct',90); num($('hisMatch'),'hisMatch',25);
+  num($('herPct'),'herPct',90); num($('herMatch'),'herMatch',25);
+  num($('kids'),'kids',12); num($('prem'),'prem'); num($('hsa'),'hsa'); num($('depfsa'),'depfsa');
+  num($('hisBal'),'hisBal'); num($('herBal'),'herBal'); num($('retGrow'),'retGrow',15);
+
+  $('modeTabs').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b||b.disabled)return; state.mode=b.dataset.mode; if(state.mode==='split'){ state.goals.forEach(function(g){g.alloc=null;}); } if(state.mode==='focus'){ state.goals.forEach(function(g){g.focusAlloc=null;}); } this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); render(); });
+
+  $('tblViewTabs').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b)return; state.tableView=b.dataset.tv; this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);}); renderGain(); });
+
+  document.querySelectorAll('.unit-toggle[data-target]').forEach(function(tg){
+    tg.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b)return;
+      var target=tg.dataset.target; // 'bonus' or 'herBonus'
+      state[target+'Unit']=b.dataset.unit;
+      tg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);});
+      render();
+    });
+  });
+
+  // expense mode toggle
+  $('expModeTog').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    state.expMode=b.dataset.mode;
+    this.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);});
+    $('expSingle').style.display=state.expMode==='single'?'flex':'none';
+    $('expItems').style.display=state.expMode==='items'?'block':'none';
+    if(state.expMode==='items' && state.expItems.length===0){
+      state.expItems.push({id:state.nextExpId++, name:'', amt:0});
+      renderExpItems();
+      var first=$('expItemList').querySelector('input[data-ex="name"]');
+      if(first) first.focus();
+    }
+    render();
+  });
+  // add expense
+  $('addExpItem').addEventListener('click',function(){
+    if(state.expItems.length>=MAX_EXP_ITEMS)return;
+    state.expItems.push({id:state.nextExpId++, name:'', amt:0});
+    renderExpItems();
+    var inputs=$('expItemList').querySelectorAll('input[data-ex="name"]');
+    var last=inputs[inputs.length-1]; if(last){last.focus();}
+    render();
+  });
+  // edit/remove expense
+  $('expItemList').addEventListener('input',function(e){
+    var inp=e.target.closest('input[data-ex]'); if(!inp)return;
+    var it=state.expItems.find(function(x){return x.id===+inp.dataset.id;}); if(!it)return;
+    if(inp.dataset.ex==='name') it.name=inp.value;
+    else it.amt=Math.max(0,+inp.value||0);
+    render();
+  });
+  $('expItemList').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-ex="del"]'); if(!b)return;
+    var id=+b.dataset.id;
+    state.expItems=state.expItems.filter(function(x){return x.id!==id;});
+    renderExpItems(); render();
+  });
+
+  var HELP={
+    hisPct:{p:'retire',t:'Your 401(k) contribution %',h:'<p>The percent of your paycheck you send to your <b>401(k) retirement account</b> before taxes. It comes out automatically every pay period.</p><p class="where">Where to get it:</p><p>Check a recent pay stub — look for a line like "401k" or "401(k) EE" in the deductions section. Divide that amount by your gross pay for that check to get the percent, or log into your retirement plan portal (Fidelity, Empower, Principal, etc.) and it will show your election directly.</p><p>Rule of thumb: <b>at minimum, contribute enough to get the full employer match</b> — anything less is leaving free money on the table. Common targets are 10-15% total (yours plus match) for long-term retirement.</p>'},
+    hisMatch:{p:'retire',t:'Your employer match cap',h:'<p>The <b>maximum percent of your pay</b> your employer will match into your 401(k). This is the ceiling, not what they always give — you have to contribute at least this much to get the full match.</p><p>Example: match up to 4% means if you contribute 4% or more, they add 4%. If you only contribute 2%, they only add 2%. If you contribute 6%, they still just add 4%.</p><p class="where">Where to get it:</p><p>Your <b>benefits summary</b> or new-hire packet spells this out. Look for phrases like "100% match up to X%" or "dollar-for-dollar to X%". Ask HR if you cannot find it.</p><p>Note: if your plan uses a <b>partial match</b> (like 50% of contributions up to 6%), enter the effective full-match equivalent — in that example, 3% (because 50% × 6% = 3%).</p>'},
+    herPct:{p:'retire',t:'Spouse\'s 401(k) contribution %',h:'<p>Same as yours — the percent of her paycheck going into her workplace retirement account each pay period, before taxes.</p><p class="where">Where to get it:</p><p>Her pay stub or retirement plan portal (Fidelity, Empower, Vanguard, etc.). If she is not sure, HR or her benefits site will show her current election.</p><p>Set to 0 if she does not have a workplace retirement plan or is not contributing.</p>'},
+    herMatch:{p:'retire',t:'Her employer match cap',h:'<p>The maximum percent of her pay her employer will match into her 401(k). This is the ceiling — she has to contribute at least this much to get the full match.</p><p class="where">Where to get it:</p><p>Her <b>benefits summary</b> or plan documents. Set to 0 if her employer does not offer a match, or if she is not enrolled.</p>'},
+    hisBal:{p:'retire',t:'Your current retirement balance',h:'<p>The <b>total dollar value</b> of your existing retirement savings today. Add up every account with your name on it:</p><p>&bull; 401(k) at your current employer<br>&bull; Old 401(k)s from previous jobs (unless rolled over)<br>&bull; Traditional or Roth IRAs<br>&bull; Rollover IRAs<br>&bull; Solo 401(k) or SEP-IRA if you have one</p><p class="where">Where to get it:</p><p>Log into each provider (Fidelity, Vanguard, Empower, Schwab, etc.) and note today\'s balance. Enter the sum here.</p><p>Leave at $0 if you have not started saving yet.</p>'},
+    herBal:{p:'retire',t:'Spouse\'s current retirement balance',h:'<p>Same as yours — the total dollar value of every retirement account in her name today: 401(k)s (current and old), IRAs, and any rollovers.</p><p class="where">Where to get it:</p><p>Her plan portals for current employer accounts, plus statements from any old 401(k)s or IRAs. Add them up and enter the total.</p>'},
+    retGrow:{p:'retire',t:'Expected annual growth',h:'<p>The <b>long-term average return</b> you expect your investments to earn each year. Used for projecting how your balance grows.</p><p>Common planning figures:</p><p>&bull; <b>7%</b> — conservative, roughly the historical S&amp;P 500 return after inflation<br>&bull; <b>8-10%</b> — historical stock market average before inflation<br>&bull; <b>4-6%</b> — more cautious, or for a mix of stocks and bonds</p><p>These are averages over decades — real returns swing wildly year to year (positive 30% one year, negative 20% the next). Use this only for long-horizon planning, not for what your balance will actually be next year.</p>'},
+    kids:{p:'ben',t:'Kids under 17',h:'<p>Count how many of your children will be <b>under age 17 on December 31, 2026</b>. A child who turns 17 at any point during the year does not count for that year.</p><p>Each child needs to be your dependent, live with you more than half the year, and have a Social Security number — almost always yes for your own kids.</p><p class="where">Where to get it:</p><p>No document needed — just count them. For most families this is simply how many of your kids are 16 or younger.</p>'},
+    prem:{p:'ben',t:'Health premiums (monthly)',h:'<p>Your share of the <b>health, dental, and vision</b> premiums that come out of your paycheck before taxes — only the part you pay, not what your employer covers.</p><p class="where">Where to get it:</p><p>Grab a recent pay stub and find the deductions section. Add up the medical/health, dental, and vision lines. If the stub shows a per-check amount, convert to monthly: paid twice a month, multiply by 2; paid every two weeks, multiply by 26 then divide by 12.</p><p>Modeling a different plan or a benefits enrollment period? Your benefits guide will list the <b>employee cost per paycheck</b> for each plan and tier (employee-only vs. family). Use that number.</p>'},
+    hsa:{p:'ben',t:'HSA contributions (yearly)',h:'<p>Money you put into a <b>Health Savings Account</b> through payroll for the year. This only applies if you are enrolled in an HSA-eligible high-deductible health plan (HDHP).</p><p class="where">Where to get it:</p><p>Your benefits enrollment confirmation shows the annual (or per-check) HSA amount you elected. Enter the yearly total <b>you</b> contribute; do not include what your employer adds.</p><p>No HDHP or no HSA? Leave it at $0. 2026 payroll limits are roughly $4,400 (self-only) or $8,750 (family). If you have a regular <b>Health FSA</b> instead, you can enter that annual election here too — it works the same way for taxes (2026 limit about $3,300).</p>'},
+    depfsa:{p:'ben',t:'Dependent-care FSA (yearly)',h:'<p>A <b>Dependent Care FSA</b> — pre-tax money set aside for daycare, preschool, or after-school care so both spouses can work. This is separate from a health FSA.</p><p class="where">Where to get it:</p><p>Your benefits enrollment — you elect an annual amount, up to <b>$5,000 per household</b> filing jointly.</p><p>Since you are paying for preschool, this is probably your biggest easy win here: electing up to $5,000 shelters that money from both income tax and Social Security/Medicare. Leave $0 if you do not use one. Note that expenses run through this FSA cannot also be claimed for the separate dependent-care tax credit.</p>'},
+    lGross:{p:'take',t:'Combined gross income',h:'<p><b>Formula:</b> your salary + your bonus + spouse salary + spouse bonus.</p><p>This is your total household income <b>before any deductions</b>. It is the number every paycheck deduction and tax below is calculated from. Bonuses shown as monthly are multiplied by 12 to get an annual figure.</p><p>If either of you also has self-employment or 1099 income, that would need to be modeled separately — this tool assumes W-2 wages only.</p>'},
+    l401:{p:'take',t:'401(k) contributions (pre-tax)',h:'<p><b>Formula:</b> (your salary + bonus) &times; your % + (spouse salary + bonus) &times; spouse %.</p><p>Money going into your workplace retirement accounts before taxes are calculated. It reduces your <b>federal taxable income</b> (so it lowers the tax bill below), but it does <b>not</b> reduce Social Security and Medicare — those are always paid on your full wages.</p><p>You keep this money — it just moves into your 401(k) instead of your checking account. That is why it comes out of gross before "take-home" is calculated.</p><p><b>2026 limits:</b> $24,500 per person under 50 (not enforced here — keep your % below what would exceed it).</p>'},
+    lCaf:{p:'take',t:'Pre-tax benefits (premiums, HSA, FSA)',h:'<p><b>Formula:</b> (monthly health premiums &times; 12) + annual HSA contribution + annual dependent-care FSA election.</p><p>These are elections you make during benefits enrollment. They come out of your paycheck before taxes and are called <b>cafeteria plan</b> or <b>Section 125</b> benefits.</p><p>They lower <b>both</b> federal income tax <b>and</b> Social Security/Medicare — which makes them one of the most tax-efficient dollars you can spend, since 401(k) only lowers federal income tax.</p><p>Only shown if any pre-tax benefits are entered above.</p>'},
+    lFit:{p:'take',t:'Federal income tax (MFJ)',h:'<p><b>Formula:</b></p><p>1. Taxable income = combined gross &minus; 401(k) contributions &minus; pre-tax benefits &minus; $32,200 standard deduction<br>2. Apply the <b>2026 MFJ tax brackets</b> to that taxable income:</p><p>&bull; 10% on income up to $24,800<br>&bull; 12% up to $100,800<br>&bull; 22% up to $211,400<br>&bull; 24% up to $403,550<br>&bull; 32% up to $512,450<br>&bull; 35% up to $768,700<br>&bull; 37% above that</p><p>The tax is <b>progressive</b> — each bracket only applies to income within that range. So earning into the 22% bracket does not mean all your income is taxed at 22%.</p><p>The child tax credit shown below this line is then subtracted from this amount.</p>'},
+    lCtc:{p:'take',t:'Child tax credit',h:'<p><b>Formula:</b> $2,200 per qualifying child under 17, subtracted straight from the federal income tax bill above.</p><p>This is a <b>credit</b>, not a deduction — every $1 comes off your tax dollar-for-dollar. It phases out $50 per $1,000 of income above $400,000 (MFJ), so at your household income you get the full amount.</p><p>Up to $1,700 per child is refundable — meaning if the credit is bigger than your tax owed, you still get up to $1,700/child back as a refund.</p><p>Only shown if you have kids entered above.</p>'},
+    lFica:{p:'take',t:'Social Security + Medicare (FICA)',h:'<p><b>Formula:</b></p><p>&bull; Social Security: <b>6.2% of wages</b>, capped at $184,500 per person for 2026<br>&bull; Medicare: <b>1.45% of wages</b>, no cap<br>&bull; Additional Medicare: extra <b>0.9%</b> on household wages above $250,000</p><p>These are payroll taxes — they fund Social Security and Medicare benefits and are paid on your <b>full wages</b>. Only pre-tax benefits (premiums, HSA, dependent-care FSA) reduce the amount subject to FICA. 401(k) contributions do <b>not</b> reduce FICA.</p><p>Your employer matches this same amount but that is invisible to you; only your half shows here.</p>'},
+    lTake:{p:'take',t:'Take-home pay',h:'<p><b>Formula:</b> combined gross &minus; 401(k) &minus; pre-tax benefits &minus; federal income tax (after child credit) &minus; FICA.</p><p>This is the money that actually lands in your bank account each year, plus a monthly average shown next to it (annual &divide; 12).</p><p><b>What this does NOT include:</b></p><p>&bull; State income tax — this tool assumes a no-income-tax state like Tennessee, Texas, or Florida; if you live elsewhere, subtract your state tax separately<br>&bull; Local or city income taxes, if applicable in your area<br>&bull; Post-tax deductions like union dues, garnishments, or after-tax insurance<br>&bull; Roth 401(k) contributions (the tool assumes traditional pre-tax)</p><p>This is a strong estimate for planning, but your actual paychecks may vary slightly due to how withholding is calculated versus actual tax owed — that gap shows up as your annual refund or tax due.</p>'}
+  };
+  var panels={retire:$('helpPanelRetire'), ben:$('helpPanel'), take:$('helpPanelTake')};
+  var activeHelp=null;
+  function closeHelp(){
+    Object.keys(panels).forEach(function(k){ panels[k].classList.remove('show'); panels[k].innerHTML=''; });
+    activeHelp=null;
+    document.querySelectorAll('.info').forEach(function(b){b.classList.remove('active');b.setAttribute('aria-expanded','false');});
+  }
+  document.querySelectorAll('.info').forEach(function(btn){
+    btn.addEventListener('click',function(e){ e.preventDefault();
+      var key=btn.dataset.help;
+      if(activeHelp===key){ closeHelp(); return; }
+      var c=HELP[key]; if(!c)return;
+      // close any other open panel first
+      Object.keys(panels).forEach(function(k){ panels[k].classList.remove('show'); panels[k].innerHTML=''; });
+      var panel=panels[c.p];
+      panel.innerHTML='<h4>'+c.t+'</h4>'+c.h; panel.classList.add('show');
+      document.querySelectorAll('.info').forEach(function(b){var on=b.dataset.help===key;b.classList.toggle('active',on);b.setAttribute('aria-expanded',on?'true':'false');});
+      activeHelp=key;
+    });
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&activeHelp)closeHelp(); });
+
+  renderEditor(); render();
+})();
+</script>
+</body>
+</html>
