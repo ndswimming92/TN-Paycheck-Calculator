@@ -5,7 +5,7 @@ tax math (brackets, FICA, Child Tax Credit, 401(k), pre-tax benefits).
 Compare compensation scenarios, itemize expenses, and project savings
 goals over 10 years.
 
-**Live tool:** https://ndswimming92.github.io/salary-planner/
+**Live tool:** [https://ndswimming92.github.io/salary-planner/](https://ndswimming92.github.io/TN-Paycheck-Calculator/)
 
 ## What it does
 
