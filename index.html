@@ -221,6 +221,20 @@
   .alloc-bar b{font-family:"Space Grotesk",sans-serif;color:var(--ink);}
   .alloc-bar .over{color:var(--danger);font-weight:600;}
   .alloc-bar .under{color:var(--accent);font-weight:600;}
+  .goal .g-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .goal .g-ring{position:relative;width:78px;height:78px;flex:0 0 auto;}
+  .goal .g-ring svg{width:78px;height:78px;transform:rotate(-90deg);display:block;}
+  .goal .g-ring .g-ring-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:12;}
+  .goal .g-ring .g-ring-fg{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .5s ease;}
+  .goal .g-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;line-height:1;}
+  .goal .g-ring-c .g-pct{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;color:var(--heading);}
+  .goal .g-ring-c .g-permo{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.01em;color:var(--accent);}
+  .goal .g-ring-c .g-permo.done{color:var(--accent-soft);}
+  .goal .g-meta{min-width:0;flex:1;}
+  .goal .g-meta .g-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14.5px;color:var(--ink);overflow-wrap:anywhere;line-height:1.25;}
+  .goal .g-saved{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-mute);margin-top:5px;}
+  .goal .g-left{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12.5px;color:var(--accent);margin-top:3px;}
+  .goal .g-peryr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-mute);margin-top:8px;}
 
   .foot{background:var(--amber-wash);border:1px solid var(--amber-border);border-radius:16px;padding:20px 22px;margin-top:16px;}
   .foot h3{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;margin:0 0 10px;color:var(--amber);}
@@ -602,7 +616,7 @@
     <div class="card-lab"><h2>What you're saving for <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);font-weight:500;margin-left:6px;">up to 3</span></h2></div>
     <div id="goalList"></div>
     <button class="add-goal" id="addGoal" type="button">+ Add a goal</button>
-    <p class="hint">Order matters in "One after another" mode — use the arrows to set priority. For a house down payment, enter the dollar amount (e.g. 10% of a $500K home = $50,000).</p>
+    <p class="hint">Enter the <b>target amount</b> and how much you've <b>saved so far</b> — the progress ring below fills in and the timeline counts only what's left. Order matters in "One after another" mode; use the arrows to set priority.</p>
   </div>
 
   <!-- TIMELINES -->
@@ -695,7 +709,7 @@
     expMode:'single', expItems:[], nextExpId:1,
     mode:'focus', tableView:'year',
     goals:[
-      {id:1, name:'Goal 1', amt:0, alloc:null}
+      {id:1, name:'Goal 1', amt:0, saved:0, alloc:null}
     ],
     nextId:2
   };
@@ -734,6 +748,16 @@
   function fmtMonths(m){ m=Math.ceil(m); if(!isFinite(m)||m<=0)return '—'; if(m<12)return m+(m===1?' month':' months'); var y=Math.floor(m/12),r=m%12; return y+' yr'+(r?' '+r+' mo':''); }
   function arrival(m){ if(!isFinite(m)||m<=0)return ''; var d=new Date();d.setDate(1);d.setMonth(d.getMonth()+Math.ceil(m)); return d.toLocaleString('en-US',{month:'long',year:'numeric'}); }
   function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  function moneyShort(n){ n=Math.round(Math.abs(n)); if(n>=1000){ var k=n/1000; var s=k>=100?String(Math.round(k)):String(Math.round(k*10)/10); return '$'+s+'k'; } return '$'+n; }
+  function ringHtml(prog,pace,done){
+    var C=2*Math.PI*52, off=(C*(1-Math.min(1,Math.max(0,prog)))).toFixed(1);
+    var sub = done ? '<span class="g-permo done">saved</span>'
+      : (pace>0 ? '<span class="g-permo">'+moneyShort(pace)+'/mo</span>' : '');
+    return '<div class="g-ring"><svg viewBox="0 0 120 120" aria-hidden="true">'+
+        '<circle class="g-ring-bg" cx="60" cy="60" r="52"></circle>'+
+        '<circle class="g-ring-fg" cx="60" cy="60" r="52" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off+'"></circle>'+
+      '</svg><div class="g-ring-c"><span class="g-pct">'+Math.round(prog*100)+'%</span>'+sub+'</div></div>';
+  }
 
   var MAX_EXP_ITEMS=25;
   function expTotal(){
@@ -779,6 +803,7 @@
         '<div class="ge-fields">'+
           '<div class="field"><label>Goal name</label><input type="text" maxlength="40" data-f="name" data-id="'+g.id+'" value="'+esc(g.name)+'" placeholder="e.g. New car"></div>'+
           '<div class="field"><label>Target amount</label><div class="input-money"><span>$</span><input type="number" min="0" step="500" data-f="amt" data-id="'+g.id+'" value="'+g.amt+'"></div></div>'+
+          '<div class="field"><label>Saved so far</label><div class="input-money"><span>$</span><input type="number" min="0" step="500" data-f="saved" data-id="'+g.id+'" value="'+(g.saved||0)+'"></div></div>'+
         '</div>';
       list.appendChild(row);
     });
@@ -799,11 +824,12 @@
     var inp=e.target.closest('input'); if(!inp||!inp.dataset.f)return;
     var g=state.goals.find(function(x){return x.id===+inp.dataset.id;}); if(!g)return;
     if(inp.dataset.f==='name'){ g.name=inp.value; renderResultsOnly(); }
+    else if(inp.dataset.f==='saved'){ g.saved=Math.max(0,+inp.value||0); render(); }
     else { g.amt=Math.max(0,+inp.value||0); render(); }
   });
   $('addGoal').addEventListener('click',function(){
     if(state.goals.length>=MAX_GOALS)return;
-    state.goals.push({id:state.nextId++, name:'New goal', amt:10000, alloc:null});
+    state.goals.push({id:state.nextId++, name:'New goal', amt:10000, saved:0, alloc:null});
     renderEditor(); render();
     var inputs=$('goalList').querySelectorAll('input[data-f="name"]');
     var last=inputs[inputs.length-1]; if(last){last.focus();last.select();}
@@ -827,16 +853,24 @@
     var cumulative=0, cumulativeOld=0;
     state.goals.forEach(function(g,i){
       var card=document.createElement('div'); card.className='goal';
-      var dateTxt='—', whenTxt='', deltaHtml='', allocHtml='';
+      var saved=Math.max(0,g.saved||0);
+      var remaining=Math.max(0,g.amt-saved);
+      var prog=g.amt>0?Math.min(1,saved/g.amt):0;
+      var done=g.amt>0 && remaining<=0;
+      var pace=0, dateTxt='—', whenTxt='', deltaHtml='', allocHtml='';
       if(state.mode==='focus'){
         // default focus allocation to full available savings the first time (or whenever cap changes below it)
         if(g.focusAlloc===undefined||g.focusAlloc===null) g.focusAlloc=S;
-        var a=Math.min(Math.max(0,g.focusAlloc),S);
-        var mB=a>0?g.amt/a:Infinity, mC=baseSave>0?g.amt/baseSave:Infinity;
-        dateTxt=fmtMonths(mB); whenTxt=arrival(mB)?('reached by '+arrival(mB)):'';
-        allocHtml='<div class="alloc"><label>Saving toward this / month <span class="alloc-max">max '+money(S)+'</span></label>'+
-          '<div class="input-money"><span>$</span><input type="number" min="0" max="'+Math.max(0,Math.floor(S))+'" step="50" data-focus="'+g.id+'" value="'+Math.round(a)+'"></div></div>';
-        if(baseSave>0&&S>0&&a>0){
+        var a=Math.min(Math.max(0,g.focusAlloc),S); pace=a;
+        var mB=a>0?remaining/a:Infinity, mC=baseSave>0?remaining/baseSave:Infinity;
+        dateTxt=done?'Complete':fmtMonths(mB); whenTxt=done?'':(arrival(mB)?('reached by '+arrival(mB)):'');
+        if(!done){
+          allocHtml='<div class="alloc"><label>Saving toward this / month <span class="alloc-max">max '+money(S)+'</span></label>'+
+            '<div class="input-money"><span>$</span><input type="number" min="0" max="'+Math.max(0,Math.floor(S))+'" step="50" data-focus="'+g.id+'" value="'+Math.round(a)+'"></div>'+
+            '<div class="g-peryr">'+(a>0?('&asymp; '+money(a*12)+'/yr at this pace'):'Enter an amount to see the timeline')+'</div></div>';
+        }
+        if(done){ deltaHtml='<span class="g-lab">Fully funded &mdash; nothing left to save.</span>'; }
+        else if(baseSave>0&&S>0&&a>0){
           var diff=mC-mB;
           if(diff>=1) deltaHtml='<span class="g-lab">On old salaries (all savings):</span> '+fmtMonths(mC)+' &middot; <b class="g-sooner">'+fmtMonths(diff)+' sooner with the raise</b>';
           else if(diff<=-1) deltaHtml='<span class="g-lab">On old salaries (all savings):</span> '+fmtMonths(mC)+' &middot; <b class="g-later">'+fmtMonths(-diff)+' later</b>';
@@ -845,29 +879,45 @@
           deltaHtml='<span class="g-lab">Set an amount above to see the timeline</span>';
         }
       } else if(state.mode==='split'){
-        var a=Math.max(0,g.alloc||0); var mS=a>0?g.amt/a:Infinity;
-        dateTxt=fmtMonths(mS); whenTxt=arrival(mS)?('reached by '+arrival(mS)):'';
-        allocHtml='<div class="alloc"><label>Saving toward this / month</label><div class="input-money"><span>$</span><input type="number" min="0" step="50" data-alloc="'+g.id+'" value="'+a+'"></div></div>';
-      } else {
-        var mine=S>0?g.amt/S:Infinity; var tot=cumulative+mine; cumulative=tot;
-        dateTxt=fmtMonths(tot); whenTxt=arrival(tot)?('reached by '+arrival(tot)):'';
-        // parallel old-salary timeline
-        var mineOld=baseSave>0?g.amt/baseSave:Infinity;
-        var totOld=cumulativeOld+mineOld; cumulativeOld=totOld;
-        var stepLine = i===0
-          ? ('<span class="g-lab">All '+money(S)+'/mo goes here first</span>')
-          : ('<span class="g-lab">Starts after goal '+i+' &middot; '+fmtMonths(mine)+' of saving</span>');
-        var compLine='';
-        if(baseSave>0&&S>0&&isFinite(totOld)){
-          var diff=totOld-tot;
-          if(diff>=1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-sooner">'+fmtMonths(diff)+' sooner with the raise</b></div>';
-          else if(diff<=-1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-later">'+fmtMonths(-diff)+' later</b></div>';
-          else compLine='<div class="g-comp"><span class="g-lab">No change vs. old salaries</span></div>';
+        var a=Math.max(0,g.alloc||0); pace=a; var mS=a>0?remaining/a:Infinity;
+        dateTxt=done?'Complete':fmtMonths(mS); whenTxt=done?'':(arrival(mS)?('reached by '+arrival(mS)):'');
+        if(done){ deltaHtml='<span class="g-lab">Fully funded &mdash; nothing left to save.</span>'; }
+        else{
+          allocHtml='<div class="alloc"><label>Saving toward this / month</label><div class="input-money"><span>$</span><input type="number" min="0" step="50" data-alloc="'+g.id+'" value="'+a+'"></div>'+
+            '<div class="g-peryr">'+(a>0?('&asymp; '+money(a*12)+'/yr at this pace'):'Enter an amount to see the timeline')+'</div></div>';
         }
-        deltaHtml = stepLine + compLine;
+      } else {
+        pace=S;
+        var mine=S>0?remaining/S:Infinity; var tot=cumulative+mine; cumulative=tot;
+        dateTxt=done?'Complete':fmtMonths(tot); whenTxt=done?'':(arrival(tot)?('reached by '+arrival(tot)):'');
+        // parallel old-salary timeline
+        var mineOld=baseSave>0?remaining/baseSave:Infinity;
+        var totOld=cumulativeOld+mineOld; cumulativeOld=totOld;
+        if(done){ deltaHtml='<span class="g-lab">Fully funded &mdash; nothing left to save.</span>'; }
+        else{
+          var stepLine = i===0
+            ? ('<span class="g-lab">All '+money(S)+'/mo goes here first</span>')
+            : ('<span class="g-lab">Starts after goal '+i+' &middot; '+fmtMonths(mine)+' of saving</span>');
+          var paceLine = S>0 ? ('<div class="g-comp g-lab">'+money(S)+'/mo &middot; '+money(S*12)+'/yr while funding this</div>') : '';
+          var compLine='';
+          if(baseSave>0&&S>0&&isFinite(totOld)){
+            var diff=totOld-tot;
+            if(diff>=1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-sooner">'+fmtMonths(diff)+' sooner with the raise</b></div>';
+            else if(diff<=-1) compLine='<div class="g-comp"><span class="g-lab">On old salaries:</span> '+fmtMonths(totOld)+' &middot; <b class="g-later">'+fmtMonths(-diff)+' later</b></div>';
+            else compLine='<div class="g-comp"><span class="g-lab">No change vs. old salaries</span></div>';
+          }
+          deltaHtml = stepLine + paceLine + compLine;
+        }
       }
+      var leftTxt = done ? 'Fully funded 🎉' : (money(remaining)+' to go');
       card.innerHTML=
-        '<div class="g-top"><span class="g-name">'+esc(g.name||('Goal '+(i+1)))+'</span><span class="g-target">'+money(g.amt)+'</span></div>'+
+        '<div class="g-head">'+ringHtml(prog,pace,done)+
+          '<div class="g-meta">'+
+            '<div class="g-name">'+esc(g.name||('Goal '+(i+1)))+'</div>'+
+            '<div class="g-saved">'+money(saved)+' of '+money(g.amt)+'</div>'+
+            '<div class="g-left">'+leftTxt+'</div>'+
+          '</div>'+
+        '</div>'+
         '<div class="g-date">'+dateTxt+'</div><div class="g-when">'+whenTxt+'</div>'+
         (allocHtml||'')+(deltaHtml?('<div class="g-delta">'+deltaHtml+'</div>'):'');
       box.appendChild(card);
@@ -898,20 +948,28 @@
       renderSplitDatesInPlace();
     }
   });
+  function updatePace(card,a,done){
+    var permo=card.querySelector('.g-permo');
+    if(permo) permo.textContent = done ? 'saved' : (a>0?moneyShort(a)+'/mo':'');
+    var peryr=card.querySelector('.g-peryr');
+    if(peryr) peryr.innerHTML = a>0 ? ('&asymp; '+money(a*12)+'/yr at this pace') : 'Enter an amount to see the timeline';
+  }
   function renderFocusDatesInPlace(S){
     var cards=$('goalResults').querySelectorAll('.goal');
     state.goals.forEach(function(g,i){
       var card=cards[i]; if(!card)return;
+      var remaining=Math.max(0,g.amt-Math.max(0,g.saved||0)), done=g.amt>0&&remaining<=0;
       var a=Math.min(Math.max(0,g.focusAlloc||0),S);
-      var m=a>0?g.amt/a:Infinity;
-      card.querySelector('.g-date').textContent=fmtMonths(m);
-      card.querySelector('.g-when').textContent=arrival(m)?('reached by '+arrival(m)):'';
+      var m=a>0?remaining/a:Infinity;
+      card.querySelector('.g-date').textContent=done?'Complete':fmtMonths(m);
+      card.querySelector('.g-when').textContent=done?'':(arrival(m)?('reached by '+arrival(m)):'');
+      updatePace(card,a,done);
     });
   }
   function renderSplitDatesInPlace(){
     var now=nowScenario(), S=Math.max(0,now.save);
     var cards=$('goalResults').querySelectorAll('.goal');
-    state.goals.forEach(function(g,i){ var card=cards[i]; if(!card)return; var a=Math.max(0,g.alloc||0), m=a>0?g.amt/a:Infinity; card.querySelector('.g-date').textContent=fmtMonths(m); card.querySelector('.g-when').textContent=arrival(m)?('reached by '+arrival(m)):''; });
+    state.goals.forEach(function(g,i){ var card=cards[i]; if(!card)return; var remaining=Math.max(0,g.amt-Math.max(0,g.saved||0)), done=g.amt>0&&remaining<=0; var a=Math.max(0,g.alloc||0), m=a>0?remaining/a:Infinity; card.querySelector('.g-date').textContent=done?'Complete':fmtMonths(m); card.querySelector('.g-when').textContent=done?'':(arrival(m)?('reached by '+arrival(m)):''); updatePace(card,a,done); });
     var totalAlloc=state.goals.reduce(function(s,g){return s+Math.max(0,g.alloc||0);},0);
     var bar=$('allocBar'), diff=S-totalAlloc;
     var status=Math.abs(diff)<1?'':(diff<0?' &middot; <span class="over">'+money(-diff)+'/mo over what you have</span>':' &middot; <span class="under">'+money(diff)+'/mo unassigned</span>');
